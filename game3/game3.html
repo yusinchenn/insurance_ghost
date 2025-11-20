@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2e3933">
+    <title>躲避保險員 - 採集模式</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="ui">
+            <!-- 開始畫面 -->
+            <div id="startScreen">
+                <h2 style="color: #689dc5; margin-bottom: 15px;">採集模式</h2>
+                <div class="intro">
+                    <h2>遊戲玩法</h2>
+                    <p>⌨️ 鍵盤方向鍵 / 🖱️ 滑鼠移動 / 👆 觸控移動 來控制角色</p>
+                    <p>躲避保險員的追捕，並在10秒內收集隨機出現的包裹！</p>
+                    <p>包裹每15秒出現一次，未能及時收集將失敗。</p>
+                </div>
+                <div class="characters">
+                    <div class="character">
+                        <div class="icon" style="color: #a0c5db;">●</div>
+                        <h3>你</h3>
+                        <p>不想要簽保單</p>
+                    </div>
+                    <div class="character">
+                        <div class="icon" style="color: #c34e17;">●</div>
+                        <h3>保險員</h3>
+                        <p>追著你簽保單</p>
+                    </div>
+                    <div class="character">
+                        <div class="icon" style="color: #ffd700;">📦</div>
+                        <h3>包裹</h3>
+                        <p>10秒內收集</p>
+                    </div>
+                </div>
+                <button id="startBtn">開始遊戲</button>
+            </div>
+
+            <!-- 遊戲UI -->
+            <div id="lives">
+                剩餘: <span id="livesCount"></span>
+            </div>
+            <div id="timer">
+                時間: <span id="timeCount">0.0</span>s
+            </div>
+            <div id="instructions">
+                鍵盤方向鍵 / 滑鼠移動 / 觸控移動 來控制角色
+            </div>
+
+            <!-- 被抓訊息 -->
+            <div id="hitMessage">
+                <h2>你簽了保單！</h2>
+            </div>
+
+            <!-- 遊戲結束 -->
+            <div id="gameOver">
+                <h1>你簽了太多保單，已破產！</h1>
+                <p>存活時間: <span id="finalTime">0</span> 秒</p>
+                <div class="button-group">
+                    <button id="homeBtn" class="secondary-btn">回首頁</button>
+                    <button id="restartBtn">再玩一次</button>
+                </div>
+            </div>
+
+            <!-- 勝利畫面 -->
+            <div id="winScreen">
+                <h1>🎉 勝利！🎉</h1>
+                <p>你成功躲避保險員 5 分鐘！</p>
+                <p>存活時間: <span id="winTime">0</span> 秒</p>
+                <div class="button-group">
+                    <button id="winHomeBtn" class="secondary-btn">回首頁</button>
+                    <button id="winRestartBtn">再玩一次</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game3.js"></script>
+</body>
+</html>
