@@ -79,6 +79,17 @@ body {
     color: #d0d4d0;
 }
 
+#enemyCount {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    background: rgba(195, 78, 23, 0.8);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    color: #d0d4d0;
+}
+
 #gameOver {
     position: absolute;
     top: 50%;
@@ -109,7 +120,16 @@ body {
     color: #d0d4d0;
 }
 
-#restartBtn {
+/* 按鈕組 - 並排顯示 */
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#restartBtn, #winRestartBtn {
     background: #689dc5;
     color: white;
     border: none;
@@ -120,8 +140,26 @@ body {
     transition: all 0.3s;
 }
 
-#restartBtn:hover {
+#restartBtn:hover, #winRestartBtn:hover {
     background: #a0c5db;
+    transform: scale(1.05);
+}
+
+/* 次要按鈕 (回首頁) */
+.secondary-btn {
+    background: #2e3933;
+    color: white;
+    border: 2px solid #689dc5;
+    padding: 15px 40px;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.secondary-btn:hover {
+    background: #689dc5;
+    border-color: #a0c5db;
     transform: scale(1.05);
 }
 
@@ -159,22 +197,6 @@ body {
     color: #d0d4d0;
 }
 
-#winRestartBtn {
-    background: #689dc5;
-    color: white;
-    border: none;
-    padding: 15px 40px;
-    font-size: 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-top: 10px;
-}
-
-#winRestartBtn:hover {
-    background: #a0c5db;
-    transform: scale(1.05);
-}
 
 @keyframes victoryPulse {
     0%, 100% { box-shadow: 0 0 30px rgba(104, 157, 197, 0.6); }
@@ -221,55 +243,61 @@ body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+#startScreen h2 {
+    font-size: 28px;
+    color: #689dc5;
+    margin-bottom: 15px;
+}
+
 #startScreen .intro {
     background: rgba(104, 157, 197, 0.2);
-    padding: 30px;
+    padding: 20px;
     border-radius: 15px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     max-width: 600px;
     border: 2px solid #689dc5;
 }
 
 #startScreen .intro h2 {
-    font-size: 24px;
-    margin-bottom: 15px;
+    font-size: 22px;
+    margin-bottom: 12px;
     color: #a0c5db;
 }
 
 #startScreen .intro p {
-    font-size: 16px;
-    line-height: 1.6;
-    margin-bottom: 10px;
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 8px;
     color: #d0d4d0;
 }
 
 #startScreen .characters {
     display: flex;
-    gap: 30px;
-    margin-bottom: 30px;
+    gap: 20px;
+    margin-bottom: 20px;
 }
 
 #startScreen .character {
     text-align: center;
     background: rgba(104, 157, 197, 0.2);
-    padding: 20px;
+    padding: 15px;
     border-radius: 10px;
     border: 2px solid #689dc5;
 }
 
 #startScreen .character .icon {
-    font-size: 40px;
-    margin-bottom: 10px;
+    font-size: 36px;
+    margin-bottom: 8px;
 }
 
 #startScreen .character h3 {
-    font-size: 20px;
-    margin-bottom: 8px;
+    font-size: 18px;
+    margin-bottom: 6px;
     color: #a0c5db;
 }
 
 #startScreen .character p {
-    font-size: 14px;
+    font-size: 13px;
     color: #d0d4d0;
 }
 
@@ -277,8 +305,8 @@ body {
     background: #689dc5;
     color: white;
     border: none;
-    padding: 20px 50px;
-    font-size: 24px;
+    padding: 15px 40px;
+    font-size: 20px;
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s;
@@ -341,12 +369,13 @@ body {
         padding: 8px 15px;
     }
 
-    #startScreen h1 {
-        font-size: 42px;
+    #startScreen h2 {
+        font-size: 26px;
+        margin-bottom: 12px;
     }
 
     #startScreen .intro {
-        padding: 20px;
+        padding: 18px;
         max-width: 90%;
     }
 
@@ -405,6 +434,14 @@ body {
         background: rgba(46, 57, 51, 0.9);
     }
 
+    #enemyCount {
+        top: 50px;
+        right: 10px;
+        padding: 6px 10px;
+        font-size: 12px;
+        background: rgba(195, 78, 23, 0.9);
+    }
+
     #instructions {
         bottom: 5px;
         font-size: 10px;
@@ -415,60 +452,62 @@ body {
 
     /* 開始畫面 */
     #startScreen {
-        padding: 20px 10px;
+        padding: 15px 10px;
         overflow-y: auto;
     }
 
-    #startScreen h1 {
-        font-size: 32px;
-        margin-bottom: 20px;
+    #startScreen h2 {
+        font-size: 24px;
+        margin-bottom: 12px;
     }
 
     #startScreen .intro {
-        padding: 15px;
-        margin-bottom: 20px;
+        padding: 12px;
+        margin-bottom: 15px;
         max-width: 95%;
     }
 
     #startScreen .intro h2 {
-        font-size: 20px;
-        margin-bottom: 10px;
+        font-size: 18px;
+        margin-bottom: 8px;
     }
 
     #startScreen .intro p {
-        font-size: 14px;
-        line-height: 1.5;
-        margin-bottom: 8px;
+        font-size: 13px;
+        line-height: 1.4;
+        margin-bottom: 6px;
     }
 
     #startScreen .characters {
         flex-direction: column;
-        gap: 15px;
-        margin-bottom: 20px;
+        gap: 12px;
+        margin-bottom: 15px;
         width: 100%;
         max-width: 300px;
     }
 
     #startScreen .character {
-        padding: 15px;
+        padding: 12px;
         width: 100%;
     }
 
     #startScreen .character .icon {
-        font-size: 35px;
+        font-size: 32px;
+        margin-bottom: 6px;
     }
 
     #startScreen .character h3 {
-        font-size: 18px;
+        font-size: 16px;
+        margin-bottom: 4px;
     }
 
     #startScreen .character p {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     #startBtn {
-        padding: 15px 40px;
-        font-size: 20px;
+        padding: 12px 35px;
+        font-size: 18px;
     }
 
     /* 被抓訊息 */
@@ -498,9 +537,16 @@ body {
         margin-bottom: 20px;
     }
 
-    #restartBtn {
+    /* 手機按鈕樣式 */
+    .button-group {
+        gap: 10px;
+        flex-direction: column;
+    }
+
+    #restartBtn, #winRestartBtn, .secondary-btn {
         padding: 12px 30px;
-        font-size: 18px;
+        font-size: 16px;
+        width: 100%;
     }
 
     /* 勝利畫面 */
@@ -519,31 +565,26 @@ body {
         font-size: 18px;
         margin-bottom: 15px;
     }
-
-    #winRestartBtn {
-        padding: 12px 30px;
-        font-size: 18px;
-    }
 }
 
 /* 小屏幕手機 */
 @media (max-width: 400px) {
-    #startScreen h1 {
-        font-size: 28px;
-        margin-bottom: 15px;
+    #startScreen h2 {
+        font-size: 22px;
+        margin-bottom: 10px;
     }
 
     #startScreen .intro h2 {
-        font-size: 18px;
+        font-size: 16px;
     }
 
     #startScreen .intro p {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     #startBtn {
-        padding: 12px 30px;
-        font-size: 18px;
+        padding: 10px 28px;
+        font-size: 16px;
     }
 
     #hitMessage h2 {
@@ -580,46 +621,46 @@ body {
 /* 橫屏手機 */
 @media (max-width: 850px) and (orientation: landscape) {
     #startScreen {
-        padding: 10px;
+        padding: 8px;
     }
 
-    #startScreen h1 {
-        font-size: 28px;
-        margin-bottom: 10px;
-    }
-
-    #startScreen .intro {
-        padding: 12px;
-        margin-bottom: 10px;
-    }
-
-    #startScreen .intro h2 {
-        font-size: 18px;
+    #startScreen h2 {
+        font-size: 24px;
         margin-bottom: 8px;
     }
 
+    #startScreen .intro {
+        padding: 10px;
+        margin-bottom: 8px;
+    }
+
+    #startScreen .intro h2 {
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
+
     #startScreen .intro p {
-        font-size: 13px;
-        margin-bottom: 5px;
+        font-size: 12px;
+        margin-bottom: 4px;
     }
 
     #startScreen .characters {
         flex-direction: row;
-        gap: 15px;
-        margin-bottom: 10px;
+        gap: 12px;
+        margin-bottom: 8px;
     }
 
     #startScreen .character {
-        padding: 10px;
+        padding: 8px;
     }
 
     #startScreen .character .icon {
-        font-size: 30px;
-        margin-bottom: 5px;
+        font-size: 28px;
+        margin-bottom: 4px;
     }
 
     #startScreen .character h3 {
-        font-size: 16px;
+        font-size: 14px;
         margin-bottom: 5px;
     }
 
@@ -628,8 +669,8 @@ body {
     }
 
     #startBtn {
-        padding: 10px 30px;
-        font-size: 18px;
+        padding: 10px 28px;
+        font-size: 16px;
     }
 
     #instructions {

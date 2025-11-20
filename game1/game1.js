@@ -285,14 +285,14 @@ class Enemy {
         // 更新速度提升
         this.updateSpeedBoost();
 
-        // 檢查是否看到玩家
+        // 檢查是否看到玩家（玩家無敵時不追蹤）
         const dx = player.x - this.x;
         const dy = player.y - this.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         this.isChasing = false;
 
-        if (distance <= CONFIG.ENEMY_VISION_RANGE) {
+        if (!player.invincible && distance <= CONFIG.ENEMY_VISION_RANGE) {
             if (hasLineOfSight(this.x, this.y, player.x, player.y)) {
                 this.isChasing = true;
             }

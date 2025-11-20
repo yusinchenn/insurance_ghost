@@ -9,8 +9,10 @@ const CONFIG = {
     ENEMY_CHASE_SPEED: 4,
     ENEMY_VISION_RANGE: 200,
     INITIAL_LIVES: 3,
-    INVINCIBLE_TIME: 1000, // 1 秒無敵
+    INVINCIBLE_TIME: 2000, // 2 秒無敵
     HIT_MESSAGE_TIME: 1500, // 被抓訊息顯示時間
+    SPAWN_INTERVAL: 20000, // 20 秒增加一個保險員
+    MAX_ENEMIES: 3, // 最多 3 個保險員
     PLAYER_COLOR: '#a0c5db',
     ENEMY_COLOR: '#c34e17',
     ENEMY_CHASE_COLOR: '#c34e17',
@@ -48,7 +50,11 @@ const WALLS = [
 ];
 
 const PLAYER_START = {x: 60, y: 60};
-const ENEMY_START = {x: 740, y: 540};
+const ENEMY_SPAWN_POSITIONS = [
+    {x: 740, y: 540},
+    {x: 740, y: 60},
+    {x: 60, y: 540}
+];
 
 // ==================== 工具函數 ====================
 
@@ -246,14 +252,8 @@ class Enemy {
         this.x = x;
         this.y = y;
         this.radius = CONFIG.ENEMY_RADIUS;
-        this.baseSpeed = CONFIG.ENEMY_SPEED; // 記錄初始速度
         this.speed = CONFIG.ENEMY_SPEED;
         this.isChasing = false;
-
-        // 速度提升機制
-        this.lastCatchTime = Date.now();
-        this.speedBoostTimer = 0; // 用於追蹤沒抓到人的時間
-        this.maxSpeedMultiplier = 3.0; // 最大速度倍率（300%）
 
         // 隨機移動
         this.direction = Math.random() * Math.PI * 2;
@@ -261,38 +261,15 @@ class Enemy {
         this.changeDirectionInterval = 60; // 每 60 幀改變方向
     }
 
-    updateSpeedBoost() {
-        // 計算自上次抓到人後經過的時間（秒）
-        const timeSinceLastCatch = (Date.now() - this.lastCatchTime) / 1000;
-
-        // 每20秒增加10%速度（0.1倍率）
-        const boostIntervals = Math.floor(timeSinceLastCatch / 5);
-        const speedMultiplier = Math.min(1.0 + (boostIntervals * 0.2), this.maxSpeedMultiplier);
-
-        // 更新當前速度
-        this.speed = this.baseSpeed * speedMultiplier;
-
-        return speedMultiplier;
-    }
-
-    resetSpeedBoost() {
-        // 重置速度提升機制
-        this.lastCatchTime = Date.now();
-        this.speed = this.baseSpeed;
-    }
-
     update(player) {
-        // 更新速度提升
-        this.updateSpeedBoost();
-
-        // 檢查是否看到玩家
+        // 檢查是否看到玩家（玩家無敵時不追蹤）
         const dx = player.x - this.x;
         const dy = player.y - this.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         this.isChasing = false;
 
-        if (distance <= CONFIG.ENEMY_VISION_RANGE) {
+        if (!player.invincible && distance <= CONFIG.ENEMY_VISION_RANGE) {
             if (hasLineOfSight(this.x, this.y, player.x, player.y)) {
                 this.isChasing = true;
             }
@@ -301,10 +278,9 @@ class Enemy {
         let moveX, moveY;
 
         if (this.isChasing) {
-            // 追擊模式 - 直接朝玩家移動，套用速度倍率
-            const chaseSpeed = CONFIG.ENEMY_CHASE_SPEED * (this.speed / this.baseSpeed);
-            moveX = (dx / distance) * chaseSpeed;
-            moveY = (dy / distance) * chaseSpeed;
+            // 追擊模式 - 直接朝玩家移動
+            moveX = (dx / distance) * CONFIG.ENEMY_CHASE_SPEED;
+            moveY = (dy / distance) * CONFIG.ENEMY_CHASE_SPEED;
         } else {
             // 巡邏模式 - 隨機移動
             this.changeDirectionTimer++;
@@ -409,11 +385,17 @@ class Game {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.player = new Player(PLAYER_START.x, PLAYER_START.y);
-        this.enemy = new Enemy(ENEMY_START.x, ENEMY_START.y);
+
+        // 保險員陣列 - 從一個開始
+        this.enemies = [new Enemy(ENEMY_SPAWN_POSITIONS[0].x, ENEMY_SPAWN_POSITIONS[0].y)];
+
         this.gameOver = false;
         this.gameStarted = false;
         this.startTime = Date.now();
         this.elapsedTime = 0;
+
+        // 保險員增生機制
+        this.lastSpawnTime = Date.now();
 
         this.setupInput();
         this.updateUI();
@@ -495,34 +477,80 @@ class Game {
             this.restart();
         });
 
+        // 回首頁按鈕 (遊戲結束)
+        document.getElementById('homeBtn').addEventListener('click', () => {
+            window.location.href = '../index.html';
+        });
+
+        // 回首頁按鈕 (勝利)
+        document.getElementById('winHomeBtn').addEventListener('click', () => {
+            window.location.href = '../index.html';
+        });
+
         // 開始遊戲按鈕
         document.getElementById('startBtn').addEventListener('click', () => {
             this.startGame();
         });
     }
 
+    spawnEnemy() {
+        // 檢查是否達到上限
+        if (this.enemies.length >= CONFIG.MAX_ENEMIES) {
+            return;
+        }
+
+        // 使用下一個生成位置
+        const spawnPos = ENEMY_SPAWN_POSITIONS[this.enemies.length];
+        this.enemies.push(new Enemy(spawnPos.x, spawnPos.y));
+
+        // 更新 UI
+        this.updateEnemyCount();
+    }
+
     update() {
         if (this.gameOver || !this.gameStarted) return;
 
         this.player.update();
-        this.enemy.update(this.player);
 
-        // 檢查碰撞
-        if (circleCircleCollision(
-            this.player.x, this.player.y, this.player.radius,
-            this.enemy.x, this.enemy.y, this.enemy.radius
-        )) {
-            if (this.player.hit()) {
-                // 重置保險員的速度提升
-                this.enemy.resetSpeedBoost();
+        // 更新所有保險員
+        for (let enemy of this.enemies) {
+            enemy.update(this.player);
+        }
 
-                // 顯示被抓訊息
-                this.showHitMessage();
+        // 檢查與所有保險員的碰撞
+        for (let enemy of this.enemies) {
+            if (circleCircleCollision(
+                this.player.x, this.player.y, this.player.radius,
+                enemy.x, enemy.y, enemy.radius
+            )) {
+                if (this.player.hit()) {
+                    // 重置保險員數量為1個
+                    this.enemies = [new Enemy(ENEMY_SPAWN_POSITIONS[0].x, ENEMY_SPAWN_POSITIONS[0].y)];
 
-                if (this.player.lives <= 0) {
-                    this.endGame();
+                    // 重置保險員增生計時器
+                    this.lastSpawnTime = Date.now();
+
+                    // 更新保險員數量顯示
+                    this.updateEnemyCount();
+
+                    // 顯示被抓訊息
+                    this.showHitMessage();
+
+                    if (this.player.lives <= 0) {
+                        this.endGame();
+                    }
+
+                    // 已經處理碰撞，跳出循環
+                    break;
                 }
             }
+        }
+
+        // 檢查是否需要增加保險員
+        const timeSinceLastSpawn = Date.now() - this.lastSpawnTime;
+        if (timeSinceLastSpawn >= CONFIG.SPAWN_INTERVAL && this.enemies.length < CONFIG.MAX_ENEMIES) {
+            this.spawnEnemy();
+            this.lastSpawnTime = Date.now();
         }
 
         // 更新計時器
@@ -547,8 +575,12 @@ class Game {
             this.ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
         }
 
-        // 繪製角色
-        this.enemy.draw(this.ctx);
+        // 繪製所有保險員
+        for (let enemy of this.enemies) {
+            enemy.draw(this.ctx);
+        }
+
+        // 繪製玩家
         this.player.draw(this.ctx);
     }
 
@@ -562,6 +594,13 @@ class Game {
 
         // 更新計時器
         document.getElementById('timeCount').textContent = this.elapsedTime.toFixed(1);
+
+        // 更新保險員數量
+        this.updateEnemyCount();
+    }
+
+    updateEnemyCount() {
+        document.getElementById('enemyCountNum').textContent = this.enemies.length;
     }
 
     showHitMessage() {
@@ -578,10 +617,15 @@ class Game {
         document.getElementById('startScreen').classList.add('hide');
         this.gameStarted = true;
         this.startTime = Date.now();
+        this.lastSpawnTime = Date.now();
     }
 
     endGame() {
         this.gameOver = true;
+        // 重置保險員數量為1個
+        this.enemies = [new Enemy(ENEMY_SPAWN_POSITIONS[0].x, ENEMY_SPAWN_POSITIONS[0].y)];
+        this.lastSpawnTime = Date.now();
+        this.updateEnemyCount();
         document.getElementById('finalTime').textContent = this.elapsedTime.toFixed(1);
         document.getElementById('gameOver').classList.add('show');
     }
@@ -597,10 +641,11 @@ class Game {
         document.getElementById('winScreen').classList.remove('show');
         document.getElementById('hitMessage').classList.remove('show');
         this.player = new Player(PLAYER_START.x, PLAYER_START.y);
-        this.enemy = new Enemy(ENEMY_START.x, ENEMY_START.y);
+        this.enemies = [new Enemy(ENEMY_SPAWN_POSITIONS[0].x, ENEMY_SPAWN_POSITIONS[0].y)];
         this.gameOver = false;
         this.gameStarted = true;
         this.startTime = Date.now();
+        this.lastSpawnTime = Date.now();
         this.elapsedTime = 0;
         this.updateUI();
     }
