@@ -125,6 +125,62 @@ body {
     transform: scale(1.05);
 }
 
+/* 勝利畫面 */
+#winScreen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(46, 57, 51, 0.95);
+    padding: 40px 60px;
+    border-radius: 20px;
+    text-align: center;
+    display: none;
+    pointer-events: all;
+    border: 3px solid #689dc5;
+    box-shadow: 0 0 30px rgba(104, 157, 197, 0.6);
+}
+
+#winScreen.show {
+    display: block;
+    animation: victoryPulse 1s ease-in-out infinite;
+}
+
+#winScreen h1 {
+    font-size: 52px;
+    margin-bottom: 20px;
+    color: #689dc5;
+    text-shadow: 2px 2px 8px rgba(104, 157, 197, 0.8);
+}
+
+#winScreen p {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #d0d4d0;
+}
+
+#winRestartBtn {
+    background: #689dc5;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+#winRestartBtn:hover {
+    background: #a0c5db;
+    transform: scale(1.05);
+}
+
+@keyframes victoryPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(104, 157, 197, 0.6); }
+    50% { box-shadow: 0 0 50px rgba(104, 157, 197, 0.9); }
+}
+
 #instructions {
     position: absolute;
     bottom: 10px;
@@ -446,6 +502,28 @@ body {
         padding: 12px 30px;
         font-size: 18px;
     }
+
+    /* 勝利畫面 */
+    #winScreen {
+        padding: 30px 25px;
+        max-width: 85%;
+        box-sizing: border-box;
+    }
+
+    #winScreen h1 {
+        font-size: 36px;
+        margin-bottom: 15px;
+    }
+
+    #winScreen p {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    #winRestartBtn {
+        padding: 12px 30px;
+        font-size: 18px;
+    }
 }
 
 /* 小屏幕手機 */
@@ -477,6 +555,14 @@ body {
     }
 
     #gameOver p {
+        font-size: 16px;
+    }
+
+    #winScreen h1 {
+        font-size: 30px;
+    }
+
+    #winScreen p {
         font-size: 16px;
     }
 
@@ -562,5 +648,19 @@ body {
     #gameOver p {
         font-size: 16px;
         margin-bottom: 15px;
+    }
+
+    #winScreen {
+        padding: 20px;
+    }
+
+    #winScreen h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    #winScreen p {
+        font-size: 16px;
+        margin-bottom: 10px;
     }
 }

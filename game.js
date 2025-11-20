@@ -246,8 +246,14 @@ class Enemy {
         this.x = x;
         this.y = y;
         this.radius = CONFIG.ENEMY_RADIUS;
+        this.baseSpeed = CONFIG.ENEMY_SPEED; // 記錄初始速度
         this.speed = CONFIG.ENEMY_SPEED;
         this.isChasing = false;
+
+        // 速度提升機制
+        this.lastCatchTime = Date.now();
+        this.speedBoostTimer = 0; // 用於追蹤沒抓到人的時間
+        this.maxSpeedMultiplier = 3.0; // 最大速度倍率（300%）
 
         // 隨機移動
         this.direction = Math.random() * Math.PI * 2;
@@ -255,7 +261,30 @@ class Enemy {
         this.changeDirectionInterval = 60; // 每 60 幀改變方向
     }
 
+    updateSpeedBoost() {
+        // 計算自上次抓到人後經過的時間（秒）
+        const timeSinceLastCatch = (Date.now() - this.lastCatchTime) / 1000;
+
+        // 每20秒增加10%速度（0.1倍率）
+        const boostIntervals = Math.floor(timeSinceLastCatch / 5);
+        const speedMultiplier = Math.min(1.0 + (boostIntervals * 0.2), this.maxSpeedMultiplier);
+
+        // 更新當前速度
+        this.speed = this.baseSpeed * speedMultiplier;
+
+        return speedMultiplier;
+    }
+
+    resetSpeedBoost() {
+        // 重置速度提升機制
+        this.lastCatchTime = Date.now();
+        this.speed = this.baseSpeed;
+    }
+
     update(player) {
+        // 更新速度提升
+        this.updateSpeedBoost();
+
         // 檢查是否看到玩家
         const dx = player.x - this.x;
         const dy = player.y - this.y;
@@ -272,9 +301,10 @@ class Enemy {
         let moveX, moveY;
 
         if (this.isChasing) {
-            // 追擊模式 - 直接朝玩家移動
-            moveX = (dx / distance) * CONFIG.ENEMY_CHASE_SPEED;
-            moveY = (dy / distance) * CONFIG.ENEMY_CHASE_SPEED;
+            // 追擊模式 - 直接朝玩家移動，套用速度倍率
+            const chaseSpeed = CONFIG.ENEMY_CHASE_SPEED * (this.speed / this.baseSpeed);
+            moveX = (dx / distance) * chaseSpeed;
+            moveY = (dy / distance) * chaseSpeed;
         } else {
             // 巡邏模式 - 隨機移動
             this.changeDirectionTimer++;
@@ -460,6 +490,11 @@ class Game {
             this.restart();
         });
 
+        // 勝利畫面重新開始按鈕
+        document.getElementById('winRestartBtn').addEventListener('click', () => {
+            this.restart();
+        });
+
         // 開始遊戲按鈕
         document.getElementById('startBtn').addEventListener('click', () => {
             this.startGame();
@@ -478,6 +513,9 @@ class Game {
             this.enemy.x, this.enemy.y, this.enemy.radius
         )) {
             if (this.player.hit()) {
+                // 重置保險員的速度提升
+                this.enemy.resetSpeedBoost();
+
                 // 顯示被抓訊息
                 this.showHitMessage();
 
@@ -489,6 +527,12 @@ class Game {
 
         // 更新計時器
         this.elapsedTime = (Date.now() - this.startTime) / 1000;
+
+        // 檢查是否達到勝利條件（5分鐘 = 300秒）
+        if (this.elapsedTime >= 300) {
+            this.winGame();
+        }
+
         this.updateUI();
     }
 
@@ -542,8 +586,15 @@ class Game {
         document.getElementById('gameOver').classList.add('show');
     }
 
+    winGame() {
+        this.gameOver = true;
+        document.getElementById('winTime').textContent = this.elapsedTime.toFixed(1);
+        document.getElementById('winScreen').classList.add('show');
+    }
+
     restart() {
         document.getElementById('gameOver').classList.remove('show');
+        document.getElementById('winScreen').classList.remove('show');
         document.getElementById('hitMessage').classList.remove('show');
         this.player = new Player(PLAYER_START.x, PLAYER_START.y);
         this.enemy = new Enemy(ENEMY_START.x, ENEMY_START.y);
