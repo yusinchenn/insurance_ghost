@@ -34,6 +34,9 @@ body {
     display: block;
     background: #2e3933;
     touch-action: none;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 #ui {
@@ -266,9 +269,15 @@ body {
 
 /* 平板響應式設計 */
 @media (max-width: 850px) {
+    #gameContainer {
+        width: 100vw;
+        height: 100vh;
+    }
+
     #gameCanvas {
-        width: 100vw !important;
-        height: auto !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain;
     }
 
     #instructions {
@@ -301,15 +310,21 @@ body {
         box-shadow: none;
         width: 100vw;
         height: 100vh;
+        height: 100dvh; /* 動態視口高度，更適合手機 */
         max-width: 100vw;
         max-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #2e3933;
     }
 
     #gameCanvas {
-        width: 100vw !important;
-        height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+        width: 100% !important;
+        height: 100% !important;
         max-width: 100vw;
         max-height: 100vh;
+        object-fit: contain;
     }
 
     /* 遊戲 UI 元素 */
