@@ -1,0 +1,688 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #2e3933 0%, #689dc5 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+#gameContainer {
+    position: relative;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#gameCanvas {
+    display: block;
+    background: #2e3933;
+    touch-action: none;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+#ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    color: white;
+    font-size: 20px;
+    padding: 20px;
+}
+
+#lives {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(46, 57, 51, 0.8);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    color: #d0d4d0;
+}
+
+.money {
+    color: #ffd700;
+    margin-left: 5px;
+    font-size: 22px;
+}
+
+#timer {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(46, 57, 51, 0.8);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    color: #d0d4d0;
+}
+
+#gameOver {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(46, 57, 51, 0.95);
+    padding: 40px 60px;
+    border-radius: 20px;
+    text-align: center;
+    display: none;
+    pointer-events: all;
+    border: 3px solid #c34e17;
+}
+
+#gameOver.show {
+    display: block;
+}
+
+#gameOver h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #c34e17;
+}
+
+#gameOver p {
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: #d0d4d0;
+}
+
+/* 按鈕組 - 並排顯示 */
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#restartBtn, #winRestartBtn {
+    background: #689dc5;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#restartBtn:hover, #winRestartBtn:hover {
+    background: #a0c5db;
+    transform: scale(1.05);
+}
+
+/* 次要按鈕 (回首頁) */
+.secondary-btn {
+    background: #2e3933;
+    color: white;
+    border: 2px solid #689dc5;
+    padding: 15px 40px;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.secondary-btn:hover {
+    background: #689dc5;
+    border-color: #a0c5db;
+    transform: scale(1.05);
+}
+
+/* 勝利畫面 */
+#winScreen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(46, 57, 51, 0.95);
+    padding: 40px 60px;
+    border-radius: 20px;
+    text-align: center;
+    display: none;
+    pointer-events: all;
+    border: 3px solid #689dc5;
+    box-shadow: 0 0 30px rgba(104, 157, 197, 0.6);
+}
+
+#winScreen.show {
+    display: block;
+    animation: victoryPulse 1s ease-in-out infinite;
+}
+
+#winScreen h1 {
+    font-size: 52px;
+    margin-bottom: 20px;
+    color: #689dc5;
+    text-shadow: 2px 2px 8px rgba(104, 157, 197, 0.8);
+}
+
+#winScreen p {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #d0d4d0;
+}
+
+
+@keyframes victoryPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(104, 157, 197, 0.6); }
+    50% { box-shadow: 0 0 50px rgba(104, 157, 197, 0.9); }
+}
+
+#instructions {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(46, 57, 51, 0.8);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: center;
+    color: #d0d4d0;
+}
+
+/* 開始畫面 */
+#startScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(46, 57, 51, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: all;
+    z-index: 10;
+}
+
+#startScreen.hide {
+    display: none;
+}
+
+#startScreen h1 {
+    font-size: 52px;
+    margin-bottom: 30px;
+    color: #c34e17;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#startScreen h2 {
+    font-size: 28px;
+    color: #689dc5;
+    margin-bottom: 15px;
+}
+
+#startScreen .intro {
+    background: rgba(104, 157, 197, 0.2);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    max-width: 600px;
+    border: 2px solid #689dc5;
+}
+
+#startScreen .intro h2 {
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: #a0c5db;
+}
+
+#startScreen .intro p {
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    color: #d0d4d0;
+}
+
+#startScreen .characters {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+#startScreen .character {
+    text-align: center;
+    background: rgba(104, 157, 197, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #689dc5;
+}
+
+#startScreen .character .icon {
+    font-size: 36px;
+    margin-bottom: 8px;
+}
+
+#startScreen .character h3 {
+    font-size: 18px;
+    margin-bottom: 6px;
+    color: #a0c5db;
+}
+
+#startScreen .character p {
+    font-size: 13px;
+    color: #d0d4d0;
+}
+
+#startBtn {
+    background: #689dc5;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+#startBtn:hover {
+    background: #a0c5db;
+    transform: scale(1.05);
+}
+
+/* 被抓訊息 */
+#hitMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(195, 78, 23, 0.95);
+    padding: 30px 50px;
+    border-radius: 15px;
+    text-align: center;
+    display: none;
+    pointer-events: none;
+    z-index: 5;
+    border: 3px solid #c34e17;
+    box-shadow: 0 0 30px rgba(195, 78, 23, 0.8);
+}
+
+#hitMessage.show {
+    display: block;
+    animation: hitPulse 0.5s ease-in-out;
+}
+
+#hitMessage h2 {
+    font-size: 36px;
+    color: white;
+    margin: 0;
+}
+
+@keyframes hitPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.1); }
+}
+
+/* 平板響應式設計 */
+@media (max-width: 850px) {
+    #gameContainer {
+        width: 100vw;
+        height: 100vh;
+    }
+
+    #gameCanvas {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain;
+    }
+
+    #instructions {
+        font-size: 12px;
+        padding: 8px 15px;
+    }
+
+    #startScreen h2 {
+        font-size: 26px;
+        margin-bottom: 12px;
+    }
+
+    #startScreen .intro {
+        padding: 18px;
+        max-width: 90%;
+    }
+
+    #startScreen .characters {
+        gap: 20px;
+    }
+}
+
+/* 手機響應式設計 */
+@media (max-width: 600px) {
+    body {
+        padding: 0;
+    }
+
+    #gameContainer {
+        border-radius: 0;
+        box-shadow: none;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh; /* 動態視口高度，更適合手機 */
+        max-width: 100vw;
+        max-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #2e3933;
+    }
+
+    #gameCanvas {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100vw;
+        max-height: 100vh;
+        object-fit: contain;
+    }
+
+    /* 遊戲 UI 元素 */
+    #lives {
+        top: 10px;
+        left: 10px;
+        padding: 8px 12px;
+        font-size: 14px;
+        background: rgba(46, 57, 51, 0.9);
+    }
+
+    .money {
+        font-size: 18px;
+        margin-left: 3px;
+    }
+
+    #timer {
+        top: 10px;
+        right: 10px;
+        padding: 8px 12px;
+        font-size: 14px;
+        background: rgba(46, 57, 51, 0.9);
+    }
+
+    #instructions {
+        bottom: 5px;
+        font-size: 10px;
+        padding: 5px 10px;
+        max-width: 90%;
+        background: rgba(46, 57, 51, 0.9);
+    }
+
+    /* 開始畫面 */
+    #startScreen {
+        padding: 15px 10px;
+        overflow-y: auto;
+    }
+
+    #startScreen h2 {
+        font-size: 24px;
+        margin-bottom: 12px;
+    }
+
+    #startScreen .intro {
+        padding: 12px;
+        margin-bottom: 15px;
+        max-width: 95%;
+    }
+
+    #startScreen .intro h2 {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+
+    #startScreen .intro p {
+        font-size: 13px;
+        line-height: 1.4;
+        margin-bottom: 6px;
+    }
+
+    #startScreen .characters {
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 15px;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    #startScreen .character {
+        padding: 12px;
+        width: 100%;
+    }
+
+    #startScreen .character .icon {
+        font-size: 32px;
+        margin-bottom: 6px;
+    }
+
+    #startScreen .character h3 {
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+
+    #startScreen .character p {
+        font-size: 12px;
+    }
+
+    #startBtn {
+        padding: 12px 35px;
+        font-size: 18px;
+    }
+
+    /* 被抓訊息 */
+    #hitMessage {
+        padding: 20px 30px;
+        max-width: 80%;
+    }
+
+    #hitMessage h2 {
+        font-size: 28px;
+    }
+
+    /* 遊戲結束畫面 */
+    #gameOver {
+        padding: 30px 25px;
+        max-width: 85%;
+        box-sizing: border-box;
+    }
+
+    #gameOver h1 {
+        font-size: 32px;
+        margin-bottom: 15px;
+    }
+
+    #gameOver p {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    /* 手機按鈕樣式 */
+    .button-group {
+        gap: 10px;
+        flex-direction: column;
+    }
+
+    #restartBtn, #winRestartBtn, .secondary-btn {
+        padding: 12px 30px;
+        font-size: 16px;
+        width: 100%;
+    }
+
+    /* 勝利畫面 */
+    #winScreen {
+        padding: 30px 25px;
+        max-width: 85%;
+        box-sizing: border-box;
+    }
+
+    #winScreen h1 {
+        font-size: 36px;
+        margin-bottom: 15px;
+    }
+
+    #winScreen p {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+}
+
+/* 小屏幕手機 */
+@media (max-width: 400px) {
+    #startScreen h2 {
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+
+    #startScreen .intro h2 {
+        font-size: 16px;
+    }
+
+    #startScreen .intro p {
+        font-size: 12px;
+    }
+
+    #startBtn {
+        padding: 10px 28px;
+        font-size: 16px;
+    }
+
+    #hitMessage h2 {
+        font-size: 24px;
+    }
+
+    #gameOver h1 {
+        font-size: 26px;
+    }
+
+    #gameOver p {
+        font-size: 16px;
+    }
+
+    #winScreen h1 {
+        font-size: 30px;
+    }
+
+    #winScreen p {
+        font-size: 16px;
+    }
+
+    #lives,
+    #timer {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .money {
+        font-size: 16px;
+    }
+}
+
+/* 橫屏手機 */
+@media (max-width: 850px) and (orientation: landscape) {
+    #startScreen {
+        padding: 8px;
+    }
+
+    #startScreen h2 {
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+
+    #startScreen .intro {
+        padding: 10px;
+        margin-bottom: 8px;
+    }
+
+    #startScreen .intro h2 {
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
+
+    #startScreen .intro p {
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+
+    #startScreen .characters {
+        flex-direction: row;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    #startScreen .character {
+        padding: 8px;
+    }
+
+    #startScreen .character .icon {
+        font-size: 28px;
+        margin-bottom: 4px;
+    }
+
+    #startScreen .character h3 {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    #startScreen .character p {
+        font-size: 12px;
+    }
+
+    #startBtn {
+        padding: 10px 28px;
+        font-size: 16px;
+    }
+
+    #instructions {
+        display: none;
+    }
+
+    #gameOver {
+        padding: 20px;
+    }
+
+    #gameOver h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+
+    #gameOver p {
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+
+    #winScreen {
+        padding: 20px;
+    }
+
+    #winScreen h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    #winScreen p {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+}
