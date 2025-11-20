@@ -7,69 +7,339 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#2e3933">
-    <title>躲避保險員 - Insurance Ghost</title>
-    <link rel="stylesheet" href="style.css">
+    <title>躲避保險員 - 遊戲選單</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Arial', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #2e3933 0%, #689dc5 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 48px;
+            color: #fff;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #d0d4d0;
+            margin-bottom: 20px;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px 0;
+        }
+
+        .game-card {
+            background: rgba(46, 57, 51, 0.95);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(104, 157, 197, 0.1) 0%, rgba(195, 78, 23, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            border-color: #689dc5;
+            box-shadow: 0 15px 40px rgba(104, 157, 197, 0.4);
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+        }
+
+        .game-card.active {
+            border-color: #689dc5;
+        }
+
+        .game-card.coming-soon {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .game-card.coming-soon:hover {
+            transform: none;
+            border-color: transparent;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-title {
+            font-size: 28px;
+            color: #689dc5;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-description {
+            font-size: 16px;
+            color: #d0d4d0;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 25px;
+            text-align: left;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-features li {
+            color: #a0c5db;
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .game-features li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #689dc5;
+        }
+
+        .play-btn {
+            background: #689dc5;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+        }
+
+        .play-btn:hover {
+            background: #a0c5db;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(104, 157, 197, 0.4);
+        }
+
+        .coming-soon-badge {
+            background: rgba(195, 78, 23, 0.8);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            color: #d0d4d0;
+            font-size: 14px;
+        }
+
+        /* 平板響應式設計 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .game-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .game-card {
+                padding: 30px 20px;
+            }
+
+            .game-icon {
+                font-size: 52px;
+            }
+
+            .game-title {
+                font-size: 24px;
+            }
+        }
+
+        /* 手機響應式設計 */
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            header {
+                margin-bottom: 30px;
+            }
+
+            .game-card {
+                padding: 25px 15px;
+            }
+
+            .game-icon {
+                font-size: 48px;
+            }
+
+            .game-title {
+                font-size: 22px;
+            }
+
+            .game-description {
+                font-size: 14px;
+            }
+
+            .game-features li {
+                font-size: 13px;
+            }
+
+            .play-btn {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+
+            footer {
+                margin-top: 40px;
+                font-size: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <div id="ui">
-            <!-- 開始畫面 -->
-            <div id="startScreen">
-                <h1>躲避保險員</h1>
-                <div class="intro">
-                    <h2>遊戲玩法</h2>
-                    <p>⌨️ 鍵盤方向鍵 / 🖱️ 滑鼠移動 / 👆 觸控移動 來控制角色</p>
-                    <p>躲避保險員的追捕，盡可能存活更長時間！</p>
-                </div>
-                <div class="characters">
-                    <div class="character">
-                        <div class="icon" style="color: #a0c5db;">●</div>
-                        <h3>你</h3>
-                        <p>想要自由的人</p>
-                    </div>
-                    <div class="character">
-                        <div class="icon" style="color: #c34e17;">●</div>
-                        <h3>保險員</h3>
-                        <p>追著你簽保單</p>
-                    </div>
-                </div>
-                <button id="startBtn">開始遊戲</button>
+    <div class="container">
+        <header>
+            <h1>躲避保險員</h1>
+            <p class="subtitle">選擇你的挑戰模式</p>
+        </header>
+
+        <div class="game-grid">
+            <!-- 加速模式 (Game 1) -->
+            <div class="game-card active" onclick="window.location.href='game1/game1.html'">
+                <div class="game-icon">🏃‍♂️</div>
+                <h2 class="game-title">加速模式</h2>
+                <p class="game-description">
+                    保險員會越來越快！隨著時間推移，追捕速度持續提升，考驗你的反應與策略。
+                </p>
+                <ul class="game-features">
+                    <li>保險員每 5 秒加速 20%</li>
+                    <li>最高可達 3 倍速度</li>
+                    <li>目標：存活 5 分鐘</li>
+                    <li>難度：★★★☆☆</li>
+                </ul>
+                <button class="play-btn">開始遊戲</button>
             </div>
 
-            <!-- 遊戲UI -->
-            <div id="lives">
-                剩餘: <span id="livesCount"></span>
-            </div>
-            <div id="timer">
-                時間: <span id="timeCount">0.0</span>s
-            </div>
-            <div id="instructions">
-                鍵盤方向鍵 / 滑鼠移動 / 觸控移動 來控制角色
-            </div>
-
-            <!-- 被抓訊息 -->
-            <div id="hitMessage">
-                <h2>你簽了保單！</h2>
-            </div>
-
-            <!-- 遊戲結束 -->
-            <div id="gameOver">
-                <h1>你簽了太多保單，已破產！</h1>
-                <p>存活時間: <span id="finalTime">0</span> 秒</p>
-                <button id="restartBtn">重新開始</button>
+            <!-- 未來遊戲模式 1 -->
+            <div class="game-card coming-soon">
+                <div class="game-icon">👻</div>
+                <h2 class="game-title">多人模式</h2>
+                <p class="game-description">
+                    面對多個保險員的圍攻，每個都有不同的追捕策略和速度。
+                </p>
+                <ul class="game-features">
+                    <li>3 個保險員同時追捕</li>
+                    <li>不同 AI 行為模式</li>
+                    <li>更複雜的迷宮地圖</li>
+                    <li>難度：★★★★☆</li>
+                </ul>
+                <div class="coming-soon-badge">即將推出</div>
             </div>
 
-            <!-- 勝利畫面 -->
-            <div id="winScreen">
-                <h1>🎉 勝利！🎉</h1>
-                <p>你成功躲避保險員 5 分鐘！</p>
-                <p>存活時間: <span id="winTime">0</span> 秒</p>
-                <button id="winRestartBtn">再玩一次</button>
+            <!-- 未來遊戲模式 2 -->
+            <div class="game-card coming-soon">
+                <div class="game-icon">⚡</div>
+                <h2 class="game-title">時間挑戰</h2>
+                <p class="game-description">
+                    限時關卡模式，需要在最短時間內完成特定目標。
+                </p>
+                <ul class="game-features">
+                    <li>收集道具解鎖出口</li>
+                    <li>計時排行榜系統</li>
+                    <li>特殊能力道具</li>
+                    <li>難度：★★★★★</li>
+                </ul>
+                <div class="coming-soon-badge">即將推出</div>
             </div>
         </div>
-    </div>
 
-    <script src="game.js"></script>
+        <footer>
+            <p>© 2025 躲避保險員 - Insurance Ghost</p>
+            <p>使用鍵盤方向鍵、滑鼠或觸控控制角色</p>
+        </footer>
+    </div>
 </body>
 </html>
