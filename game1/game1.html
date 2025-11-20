@@ -78,5 +78,14 @@
     </div>
 
     <script src="game1.js"></script>
+    <audio id="bgm" src="/audio/music.mp3" autoplay loop muted style="display: none;"></audio>
+
+    <script>
+    window.addEventListener('click', () => {
+        const bgm = document.getElementById('bgm');
+        bgm.muted = false;
+        bgm.volume = 0.3;  
+    }, { once: true });
+    </script>
 </body>
 </html>
