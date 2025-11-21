@@ -556,8 +556,8 @@ class Game {
         // 更新計時器
         this.elapsedTime = (Date.now() - this.startTime) / 1000;
 
-        // 檢查是否達到勝利條件（5分鐘 = 300秒）
-        if (this.elapsedTime >= 300) {
+        // 檢查是否達到勝利條件（3分鐘 = 180秒）
+        if (this.elapsedTime >= 180) {
             this.winGame();
         }
 
