@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戲程式撰寫教學 - 各為「保保」，上車囉</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #2e3933 0%, #689dc5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #689dc5;
+        }
+
+        h1 {
+            font-size: 42px;
+            color: #2e3933;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            background: #689dc5;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: #2e3933;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(104, 157, 197, 0.4);
+        }
+
+        .toc {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+        }
+
+        .toc h2 {
+            color: #2e3933;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .toc li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #689dc5;
+            font-weight: bold;
+        }
+
+        .toc a {
+            color: #2e3933;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover {
+            color: #689dc5;
+        }
+
+        .section {
+            margin-bottom: 60px;
+        }
+
+        .section h2 {
+            color: #2e3933;
+            font-size: 32px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #689dc5;
+        }
+
+        .section h3 {
+            color: #689dc5;
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .section h4 {
+            color: #c34e17;
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .section p {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .code-block {
+            background: #2e3933;
+            color: #a0c5db;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .code-comment {
+            color: #83a598;
+        }
+
+        .code-keyword {
+            color: #fb4934;
+        }
+
+        .code-function {
+            color: #b8bb26;
+        }
+
+        .code-string {
+            color: #fabd2f;
+        }
+
+        .code-number {
+            color: #d3869b;
+        }
+
+        .highlight-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .highlight-box h4 {
+            color: #856404;
+            margin-top: 0;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border-left: 5px solid #0c5460;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info-box h4 {
+            color: #0c5460;
+            margin-top: 0;
+        }
+
+        .demo-box {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .demo-box h4 {
+            color: #2e7d32;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .visual-diagram {
+            background: white;
+            border: 2px solid #689dc5;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .visual-diagram canvas {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .step-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 25px;
+            padding-left: 50px;
+            position: relative;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #689dc5;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: #689dc5;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(104, 157, 197, 0.3);
+        }
+
+        .feature-card h4 {
+            color: #2e3933;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid #ddd;
+            text-align: center;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .section h2 {
+                font-size: 26px;
+            }
+
+            .section h3 {
+                font-size: 20px;
+            }
+
+            .code-block {
+                padding: 15px;
+            }
+
+            .code-block pre {
+                font-size: 12px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 遊戲程式撰寫教學</h1>
+            <p class="subtitle">從零開始打造「各為保保，上車囉」遊戲</p>
+            <div class="nav-buttons">
+                <a href="../index.html" class="nav-btn">回到首頁</a>
+                <a href="../game1/game1.html" class="nav-btn">試玩遊戲</a>
+            </div>
+        </header>
+
+        <!-- 目錄 -->
+        <nav class="toc">
+            <h2>📚 教學目錄</h2>
+            <ul>
+                <li><a href="#section1">1. 基礎設定與畫布</a></li>
+                <li><a href="#section2">2. 碰撞檢測系統（邊緣識別）</a></li>
+                <li><a href="#section3">3. 角色移動控制</a></li>
+                <li><a href="#section4">4. 計時與計分邏輯</a></li>
+                <li><a href="#section5">5. 敵人 AI 與視線系統</a></li>
+                <li><a href="#section6">6. 遊戲狀態管理</a></li>
+                <li><a href="#section7">7. 完整遊戲循環</a></li>
+            </ul>
+        </nav>
+
+        <!-- 第一章：基礎設定與畫布 -->
+        <section class="section" id="section1">
+            <h2>1. 基礎設定與畫布</h2>
+
+            <p>在開始撰寫遊戲之前，我們需要先建立基本的遊戲配置與 Canvas 畫布。</p>
+
+            <h3>步驟 1：建立遊戲配置</h3>
+            <p>首先，我們定義遊戲的基本參數，例如畫布大小、角色速度、顏色等。使用物件集中管理這些設定，方便日後調整。</p>
+
+            <div class="code-block">
+<pre><span class="code-comment">// ==================== 遊戲配置 ====================</span>
+<span class="code-keyword">const</span> CONFIG = {
+    <span class="code-comment">// 畫布尺寸</span>
+    CANVAS_WIDTH: <span class="code-number">800</span>,
+    CANVAS_HEIGHT: <span class="code-number">600</span>,
+
+    <span class="code-comment">// 玩家參數</span>
+    PLAYER_RADIUS: <span class="code-number">15</span>,        <span class="code-comment">// 玩家半徑</span>
+    PLAYER_SPEED: <span class="code-number">3</span>,          <span class="code-comment">// 玩家移動速度</span>
+
+    <span class="code-comment">// 敵人參數</span>
+    ENEMY_RADIUS: <span class="code-number">15</span>,         <span class="code-comment">// 敵人半徑</span>
+    ENEMY_SPEED: <span class="code-number">2.5</span>,         <span class="code-comment">// 敵人巡邏速度</span>
+    ENEMY_CHASE_SPEED: <span class="code-number">4</span>,     <span class="code-comment">// 敵人追擊速度</span>
+    ENEMY_VISION_RANGE: <span class="code-number">200</span>,  <span class="code-comment">// 敵人視線範圍</span>
+
+    <span class="code-comment">// 遊戲機制</span>
+    INITIAL_LIVES: <span class="code-number">3</span>,         <span class="code-comment">// 初始生命值</span>
+    INVINCIBLE_TIME: <span class="code-number">2000</span>,    <span class="code-comment">// 無敵時間（毫秒）</span>
+
+    <span class="code-comment">// 顏色配置</span>
+    PLAYER_COLOR: <span class="code-string">'#a0c5db'</span>,   <span class="code-comment">// 玩家顏色（淺藍色）</span>
+    ENEMY_COLOR: <span class="code-string">'#c34e17'</span>,    <span class="code-comment">// 敵人顏色（橘紅色）</span>
+    WALL_COLOR: <span class="code-string">'#d0d4d0'</span>,     <span class="code-comment">// 牆壁顏色（灰白色）</span>
+    FLOOR_COLOR: <span class="code-string">'#2e3933'</span>     <span class="code-comment">// 地板顏色（深綠色）</span>
+};</pre>
+            </div>
+
+            <div class="highlight-box">
+                <h4>💡 為什麼要使用配置物件？</h4>
+                <p>使用 CONFIG 物件集中管理所有常數，有以下優點：</p>
+                <ul>
+                    <li>容易維護：所有參數集中在一處，修改時不用翻遍整個程式碼</li>
+                    <li>避免魔術數字：使用有意義的名稱，提高程式碼可讀性</li>
+                    <li>方便調整平衡：遊戲測試時可快速調整數值</li>
+                </ul>
+            </div>
+
+            <h3>步驟 2：設定 Canvas 畫布</h3>
+            <p>Canvas 是 HTML5 提供的繪圖 API，我們用它來繪製遊戲畫面。</p>
+
+            <div class="code-block">
+<pre><span class="code-comment">// HTML 中的 Canvas 元素</span>
+&lt;canvas id=<span class="code-string">"gameCanvas"</span> width=<span class="code-string">"800"</span> height=<span class="code-string">"600"</span>&gt;&lt;/canvas&gt;
+
+<span class="code-comment">// JavaScript 中取得 Canvas 並設定繪圖環境</span>
+<span class="code-keyword">class</span> <span class="code-function">Game</span> {
+    <span class="code-function">constructor</span>() {
+        <span class="code-comment">// 取得 Canvas 元素</span>
+        <span class="code-keyword">this</span>.canvas = document.<span class="code-function">getElementById</span>(<span class="code-string">'gameCanvas'</span>);
+
+        <span class="code-comment">// 取得 2D 繪圖環境 (context)</span>
+        <span class="code-keyword">this</span>.ctx = <span class="code-keyword">this</span>.canvas.<span class="code-function">getContext</span>(<span class="code-string">'2d'</span>);
+    }
+
+    <span class="code-comment">// 繪製畫面的方法</span>
+    <span class="code-function">draw</span>() {
+        <span class="code-comment">// 清空畫面（繪製地板）</span>
+        <span class="code-keyword">this</span>.ctx.fillStyle = CONFIG.FLOOR_COLOR;
+        <span class="code-keyword">this</span>.ctx.<span class="code-function">fillRect</span>(<span class="code-number">0</span>, <span class="code-number">0</span>, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+    }
+}</pre>
+            </div>
+
+            <h3>步驟 3：建立牆體地圖</h3>
+            <p>使用陣列定義牆體位置，創造迷宮效果。每個牆體是一個矩形物件，包含 x、y、width、height。</p>
+
+            <div class="code-block">
+<pre><span class="code-comment">// 定義牆體陣列</span>
+<span class="code-keyword">const</span> WALLS = [
+    <span class="code-comment">// 外牆（上、下、左、右）</span>
+    {x: <span class="code-number">0</span>, y: <span class="code-number">0</span>, width: <span class="code-number">800</span>, height: <span class="code-number">20</span>},       <span class="code-comment">// 上牆</span>
+    {x: <span class="code-number">0</span>, y: <span class="code-number">580</span>, width: <span class="code-number">800</span>, height: <span class="code-number">20</span>},     <span class="code-comment">// 下牆</span>
+    {x: <span class="code-number">0</span>, y: <span class="code-number">0</span>, width: <span class="code-number">20</span>, height: <span class="code-number">600</span>},       <span class="code-comment">// 左牆</span>
+    {x: <span class="code-number">780</span>, y: <span class="code-number">0</span>, width: <span class="code-number">20</span>, height: <span class="code-number">600</span>},     <span class="code-comment">// 右牆</span>
+
+    <span class="code-comment">// 內部障礙物（創造迷宮效果）</span>
+    {x: <span class="code-number">100</span>, y: <span class="code-number">100</span>, width: <span class="code-number">150</span>, height: <span class="code-number">20</span>},   <span class="code-comment">// 水平牆</span>
+    {x: <span class="code-number">300</span>, y: <span class="code-number">200</span>, width: <span class="code-number">20</span>, height: <span class="code-number">200</span>}    <span class="code-comment">// 垂直牆</span>
+];
+
+<span class="code-comment">// 繪製所有牆體</span>
+<span class="code-function">drawWalls</span>() {
+    <span class="code-keyword">this</span>.ctx.fillStyle = CONFIG.WALL_COLOR;
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> wall <span class="code-keyword">of</span> WALLS) {
+        <span class="code-keyword">this</span>.ctx.<span class="code-function">fillRect</span>(wall.x, wall.y, wall.width, wall.height);
+    }
+}</pre>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎨 呈現畫面</h4>
+                <canvas id="demo1" width="400" height="300"></canvas>
+                <p style="margin-top: 15px; color: #666;">深綠色地板 + 灰白色牆體構成的遊戲場景</p>
+            </div>
+        </section>
+
+        <!-- 第二章：碰撞檢測系統 -->
+        <section class="section" id="section2">
+            <h2>2. 碰撞檢測系統（邊緣識別）</h2>
+
+            <p>碰撞檢測是遊戲中最重要的系統之一，用於判斷角色是否碰到牆壁或其他物體。我們需要實作兩種碰撞檢測：</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>圓形與矩形碰撞</h4>
+                    <p>用於偵測玩家/敵人（圓形）是否碰到牆壁（矩形）</p>
+                </div>
+                <div class="feature-card">
+                    <h4>圓形與圓形碰撞</h4>
+                    <p>用於偵測玩家（圓形）是否碰到敵人（圓形）</p>
+                </div>
+            </div>
+
+            <h3>步驟 1：圓形與矩形碰撞檢測</h3>
+            <p>這是最常用的碰撞檢測方法，用於偵測玩家是否撞到牆壁。</p>
+
+            <div class="info-box">
+                <h4>📐 演算法原理</h4>
+                <p><strong>找出矩形上最接近圓心的點</strong>，然後計算該點與圓心的距離：</p>
+                <ol class="step-list">
+                    <li>找出矩形上最接近圓心的 X 座標（testX）</li>
+                    <li>找出矩形上最接近圓心的 Y 座標（testY）</li>
+                    <li>計算 (testX, testY) 與圓心的距離</li>
+                    <li>如果距離 ≤ 圓的半徑，則發生碰撞</li>
+                </ol>
+            </div>
+
+            <div class="code-block">
+<pre><span class="code-comment">/**
+ * 圓形與矩形碰撞檢測
+ * @param {number} cx - 圓心 X 座標
+ * @param {number} cy - 圓心 Y 座標
+ * @param {number} radius - 圓的半徑
+ * @param {object} rect - 矩形物件 {x, y, width, height}
+ * @returns {boolean} - 是否發生碰撞
+ */</span>
+<span class="code-keyword">function</span> <span class="code-function">circleRectCollision</span>(cx, cy, radius, rect) {
+    <span class="code-comment">// 步驟 1：找出矩形上最接近圓心的 X 座標</span>
+    <span class="code-keyword">let</span> testX = cx;  <span class="code-comment">// 預設為圓心 X</span>
+
+    <span class="code-keyword">if</span> (cx &lt; rect.x) {
+        <span class="code-comment">// 圓心在矩形左側，最近點是矩形左邊緣</span>
+        testX = rect.x;
+    } <span class="code-keyword">else if</span> (cx &gt; rect.x + rect.width) {
+        <span class="code-comment">// 圓心在矩形右側，最近點是矩形右邊緣</span>
+        testX = rect.x + rect.width;
+    }
+
+    <span class="code-comment">// 步驟 2：找出矩形上最接近圓心的 Y 座標</span>
+    <span class="code-keyword">let</span> testY = cy;  <span class="code-comment">// 預設為圓心 Y</span>
+
+    <span class="code-keyword">if</span> (cy &lt; rect.y) {
+        <span class="code-comment">// 圓心在矩形上方，最近點是矩形上邊緣</span>
+        testY = rect.y;
+    } <span class="code-keyword">else if</span> (cy &gt; rect.y + rect.height) {
+        <span class="code-comment">// 圓心在矩形下方，最近點是矩形下邊緣</span>
+        testY = rect.y + rect.height;
+    }
+
+    <span class="code-comment">// 步驟 3：計算最近點與圓心的距離</span>
+    <span class="code-keyword">const</span> distX = cx - testX;  <span class="code-comment">// X 方向距離</span>
+    <span class="code-keyword">const</span> distY = cy - testY;  <span class="code-comment">// Y 方向距離</span>
+    <span class="code-keyword">const</span> distance = Math.<span class="code-function">sqrt</span>(distX * distX + distY * distY);
+
+    <span class="code-comment">// 步驟 4：判斷是否碰撞（距離 ≤ 半徑）</span>
+    <span class="code-keyword">return</span> distance &lt;= radius;
+}</pre>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎯 碰撞檢測示意圖</h4>
+                <canvas id="demo2" width="400" height="300"></canvas>
+                <p style="margin-top: 15px; color: #666;">藍色圓形接近灰色矩形時，會觸發碰撞檢測（圓形變紅）</p>
+            </div>
+
+            <h3>步驟 2：圓形與圓形碰撞檢測</h3>
+            <p>用於偵測玩家是否被敵人抓到。這個比較簡單，只需計算兩個圓心的距離。</p>
+
+            <div class="code-block">
+<pre><span class="code-comment">/**
+ * 圓形與圓形碰撞檢測
+ * @param {number} x1, y1 - 第一個圓的圓心座標
+ * @param {number} r1 - 第一個圓的半徑
+ * @param {number} x2, y2 - 第二個圓的圓心座標
+ * @param {number} r2 - 第二個圓的半徑
+ * @returns {boolean} - 是否發生碰撞
+ */</span>
+<span class="code-keyword">function</span> <span class="code-function">circleCircleCollision</span>(x1, y1, r1, x2, y2, r2) {
+    <span class="code-comment">// 計算兩圓心的距離</span>
+    <span class="code-keyword">const</span> dx = x1 - x2;
+    <span class="code-keyword">const</span> dy = y1 - y2;
+    <span class="code-keyword">const</span> distance = Math.<span class="code-function">sqrt</span>(dx * dx + dy * dy);
+
+    <span class="code-comment">// 如果距離 ≤ 兩圓半徑之和，則發生碰撞</span>
+    <span class="code-keyword">return</span> distance &lt;= r1 + r2;
+}</pre>
+            </div>
+
+            <h3>步驟 3：在角色移動時應用碰撞檢測</h3>
+            <p>當玩家移動時，我們需要檢查新位置是否會碰到牆壁，如果會碰撞就不允許移動。</p>
+
+            <div class="code-block">
+<pre><span class="code-keyword">class</span> <span class="code-function">Player</span> {
+    <span class="code-function">update</span>() {
+        <span class="code-comment">// 計算新位置</span>
+        <span class="code-keyword">const</span> newX = <span class="code-keyword">this</span>.x + dx * <span class="code-keyword">this</span>.speed;
+        <span class="code-keyword">const</span> newY = <span class="code-keyword">this</span>.y + dy * <span class="code-keyword">this</span>.speed;
+
+        <span class="code-comment">// X 軸移動檢測（分開檢測可以沿牆滑動）</span>
+        <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.<span class="code-function">checkCollision</span>(newX, <span class="code-keyword">this</span>.y)) {
+            <span class="code-keyword">this</span>.x = newX;  <span class="code-comment">// 沒有碰撞，更新位置</span>
+        }
+
+        <span class="code-comment">// Y 軸移動檢測</span>
+        <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.<span class="code-function">checkCollision</span>(<span class="code-keyword">this</span>.x, newY)) {
+            <span class="code-keyword">this</span>.y = newY;  <span class="code-comment">// 沒有碰撞，更新位置</span>
+        }
+    }
+
+    <span class="code-comment">// 檢查指定位置是否會碰到牆壁</span>
+    <span class="code-function">checkCollision</span>(x, y) {
+        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> wall <span class="code-keyword">of</span> WALLS) {
+            <span class="code-keyword">if</span> (<span class="code-function">circleRectCollision</span>(x, y, <span class="code-keyword">this</span>.radius, wall)) {
+                <span class="code-keyword">return</span> <span class="code-keyword">true</span>;  <span class="code-comment">// 發生碰撞</span>
+            }
+        }
+        <span class="code-keyword">return</span> <span class="code-keyword">false</span>;  <span class="code-comment">// 沒有碰撞</span>
+    }
+}</pre>
+            </div>
+
+            <div class="highlight-box">
+                <h4>💡 為什麼要分開檢測 X 和 Y？</h4>
+                <p>分開檢測 X 軸和 Y 軸的移動，可以讓角色「沿著牆壁滑動」。例如：</p>
+                <ul>
+                    <li>玩家斜向移動撞到垂直牆壁時，X 軸被阻擋但 Y 軸可以繼續移動</li>
+                    <li>這樣玩家就能沿著牆壁滑動，而不是完全卡住</li>
+                    <li>提供更流暢的遊戲體驗</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 第三章：角色移動控制 -->
+        <section class="section" id="section3">
+            <h2>3. 角色移動控制</h2>
+
+            <p>我們的遊戲支援三種控制方式：鍵盤、滑鼠、觸控。這讓玩家在不同裝置上都能流暢遊玩。</p>
+
+            <h3>步驟 1：鍵盤控制</h3>
+            <p>使用方向鍵或 WASD 鍵控制角色移動。</p>
+
+            <div class="code-block">
+<pre><span class="code-keyword">class</span> <span class="code-function">Player</span> {
+    <span class="code-function">constructor</span>(x, y) {
+        <span class="code-comment">// 記錄按鍵狀態</span>
+        <span class="code-keyword">this</span>.keys = {
+            up: <span class="code-keyword">false</span>,
+            down: <span class="code-keyword">false</span>,
+            left: <span class="code-keyword">false</span>,
+            right: <span class="code-keyword">false</span>
+        };
+    }
+}
+
+<span class="code-comment">// 監聽按鍵按下事件</span>
+window.<span class="code-function">addEventListener</span>(<span class="code-string">'keydown'</span>, (e) =&gt; {
+    <span class="code-keyword">if</span> (e.key === <span class="code-string">'ArrowUp'</span> || e.key === <span class="code-string">'w'</span>) {
+        player.keys.up = <span class="code-keyword">true</span>;
+        e.<span class="code-function">preventDefault</span>();  <span class="code-comment">// 防止頁面滾動</span>
+    }
+    <span class="code-keyword">if</span> (e.key === <span class="code-string">'ArrowDown'</span> || e.key === <span class="code-string">'s'</span>) {
+        player.keys.down = <span class="code-keyword">true</span>;
+    }
+    <span class="code-keyword">if</span> (e.key === <span class="code-string">'ArrowLeft'</span> || e.key === <span class="code-string">'a'</span>) {
+        player.keys.left = <span class="code-keyword">true</span>;
+    }
+    <span class="code-keyword">if</span> (e.key === <span class="code-string">'ArrowRight'</span> || e.key === <span class="code-string">'d'</span>) {
+        player.keys.right = <span class="code-keyword">true</span>;
+    }
+});
+
+<span class="code-comment">// 監聽按鍵放開事件</span>
+window.<span class="code-function">addEventListener</span>(<span class="code-string">'keyup'</span>, (e) =&gt; {
+    <span class="code-keyword">if</span> (e.key === <span class="code-string">'ArrowUp'</span> || e.key === <span class="code-string">'w'</span>) player.keys.up = <span class="code-keyword">false</span>;
+    <span class="code-keyword">if</span> (e.key === <span class="code-string">'ArrowDown'</span> || e.key === <span class="code-string">'s'</span>) player.keys.down = <span class="code-keyword">false</span>;
+    <span class="code-keyword">if</span> (e.key === <span class="code-string">'ArrowLeft'</span> || e.key === <span class="code-string">'a'</span>) player.keys.left = <span class="code-keyword">false</span>;
+    <span class="code-keyword">if</span> (e.key === <span class="code-string">'ArrowRight'</span> || e.key === <span class="code-string">'d'</span>) player.keys.right = <span class="code-keyword">false</span>;
+});</pre>
+            </div>
+
+            <h3>步驟 2：根據按鍵狀態移動角色</h3>
+            <p>在遊戲更新循環中，根據按鍵狀態計算移動方向。</p>
+
+            <div class="code-block">
+<pre><span class="code-function">update</span>() {
+    <span class="code-keyword">let</span> dx = <span class="code-number">0</span>;  <span class="code-comment">// X 軸移動量</span>
+    <span class="code-keyword">let</span> dy = <span class="code-number">0</span>;  <span class="code-comment">// Y 軸移動量</span>
+
+    <span class="code-comment">// 根據按鍵狀態設定移動方向</span>
+    <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.keys.up) dy -= <span class="code-number">1</span>;      <span class="code-comment">// 向上</span>
+    <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.keys.down) dy += <span class="code-number">1</span>;    <span class="code-comment">// 向下</span>
+    <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.keys.left) dx -= <span class="code-number">1</span>;    <span class="code-comment">// 向左</span>
+    <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.keys.right) dx += <span class="code-number">1</span>;   <span class="code-comment">// 向右</span>
+
+    <span class="code-comment">// 對角線移動正規化（避免對角線移動過快）</span>
+    <span class="code-keyword">if</span> (dx !== <span class="code-number">0</span> && dy !== <span class="code-number">0</span>) {
+        dx *= <span class="code-number">0.707</span>;  <span class="code-comment">// ≈ 1/√2，保持對角線速度一致</span>
+        dy *= <span class="code-number">0.707</span>;
+    }
+
+    <span class="code-comment">// 計算新位置</span>
+    <span class="code-keyword">const</span> newX = <span class="code-keyword">this</span>.x + dx * <span class="code-keyword">this</span>.speed;
+    <span class="code-keyword">const</span> newY = <span class="code-keyword">this</span>.y + dy * <span class="code-keyword">this</span>.speed;
+
+    <span class="code-comment">// 碰撞檢測後更新位置（如前一章所述）</span>
+    <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.<span class="code-function">checkCollision</span>(newX, <span class="code-keyword">this</span>.y)) <span class="code-keyword">this</span>.x = newX;
+    <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.<span class="code-function">checkCollision</span>(<span class="code-keyword">this</span>.x, newY)) <span class="code-keyword">this</span>.y = newY;
+}</pre>
+            </div>
+
+            <div class="info-box">
+                <h4>📐 為什麼要正規化對角線移動？</h4>
+                <p>假設玩家同時按下「上」和「右」：</p>
+                <ul>
+                    <li>不正規化：速度 = √(1² + 1²) = 1.414 倍（對角線比單方向快 41%）</li>
+                    <li>正規化後：速度 = √(0.707² + 0.707²) = 1 倍（與單方向速度相同）</li>
+                    <li>確保玩家在各個方向的移動速度一致</li>
+                </ul>
+            </div>
+
+            <h3>步驟 3：滑鼠與觸控控制</h3>
+            <p>讓角色朝向滑鼠/觸控位置移動，提供更直覺的操作體驗。</p>
+
+            <div class="code-block">
+<pre><span class="code-keyword">class</span> <span class="code-function">Player</span> {
+    <span class="code-function">constructor</span>(x, y) {
+        <span class="code-comment">// 儲存目標位置</span>
+        <span class="code-keyword">this</span>.targetX = <span class="code-keyword">null</span>;
+        <span class="code-keyword">this</span>.targetY = <span class="code-keyword">null</span>;
+    }
+}
+
+<span class="code-comment">// 滑鼠移動事件</span>
+canvas.<span class="code-function">addEventListener</span>(<span class="code-string">'mousemove'</span>, (e) =&gt; {
+    <span class="code-keyword">const</span> rect = canvas.<span class="code-function">getBoundingClientRect</span>();
+
+    <span class="code-comment">// 計算縮放比例（Canvas 實際尺寸 vs 顯示尺寸）</span>
+    <span class="code-keyword">const</span> scaleX = canvas.width / rect.width;
+    <span class="code-keyword">const</span> scaleY = canvas.height / rect.height;
+
+    <span class="code-comment">// 轉換滑鼠座標到 Canvas 座標</span>
+    player.targetX = (e.clientX - rect.left) * scaleX;
+    player.targetY = (e.clientY - rect.top) * scaleY;
+});
+
+<span class="code-comment">// 觸控移動事件</span>
+canvas.<span class="code-function">addEventListener</span>(<span class="code-string">'touchmove'</span>, (e) =&gt; {
+    e.<span class="code-function">preventDefault</span>();  <span class="code-comment">// 防止頁面滾動</span>
+    <span class="code-keyword">const</span> rect = canvas.<span class="code-function">getBoundingClientRect</span>();
+    <span class="code-keyword">const</span> touch = e.touches[<span class="code-number">0</span>];
+
+    player.targetX = (touch.clientX - rect.left) * scaleX;
+    player.targetY = (touch.clientY - rect.top) * scaleY;
+}, {passive: <span class="code-keyword">false</span>});</pre>
+            </div>
+
+            <div class="code-block">
+<pre><span class="code-comment">// 在 update() 中處理滑鼠/觸控移動</span>
+<span class="code-function">update</span>() {
+    <span class="code-keyword">let</span> dx = <span class="code-number">0</span>, dy = <span class="code-number">0</span>;
+
+    <span class="code-comment">// 如果有目標位置（滑鼠/觸控）</span>
+    <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.targetX !== <span class="code-keyword">null</span> && <span class="code-keyword">this</span>.targetY !== <span class="code-keyword">null</span>) {
+        <span class="code-comment">// 計算到目標的距離</span>
+        <span class="code-keyword">const</span> distX = <span class="code-keyword">this</span>.targetX - <span class="code-keyword">this</span>.x;
+        <span class="code-keyword">const</span> distY = <span class="code-keyword">this</span>.targetY - <span class="code-keyword">this</span>.y;
+        <span class="code-keyword">const</span> distance = Math.<span class="code-function">sqrt</span>(distX * distX + distY * distY);
+
+        <span class="code-keyword">if</span> (distance &gt; <span class="code-number">5</span>) {  <span class="code-comment">// 避免抖動（太接近目標就停止）</span>
+            <span class="code-comment">// 正規化方向向量</span>
+            dx = distX / distance;
+            dy = distY / distance;
+        }
+    }
+
+    <span class="code-comment">// 後續移動邏輯同鍵盤控制...</span>
+}</pre>
+            </div>
+        </section>
+
+        <!-- 第四章：計時與計分邏輯 -->
+        <section class="section" id="section4">
+            <h2>4. 計時與計分邏輯</h2>
+
+            <p>遊戲的核心目標是「存活指定時間」，因此我們需要實作計時系統和生命值系統。</p>
+
+            <h3>步驟 1：建立計時系統</h3>
+            <p>使用 JavaScript 的 Date.now() 追蹤遊戲時間。</p>
+
+            <div class="code-block">
+<pre><span class="code-keyword">class</span> <span class="code-function">Game</span> {
+    <span class="code-function">constructor</span>() {
+        <span class="code-comment">// 記錄遊戲開始時間（毫秒）</span>
+        <span class="code-keyword">this</span>.startTime = Date.<span class="code-function">now</span>();
+
+        <span class="code-comment">// 當前經過時間（秒）</span>
+        <span class="code-keyword">this</span>.elapsedTime = <span class="code-number">0</span>;
+    }
+
+    <span class="code-function">update</span>() {
+        <span class="code-comment">// 計算經過時間（轉換為秒）</span>
+        <span class="code-keyword">this</span>.elapsedTime = (Date.<span class="code-function">now</span>() - <span class="code-keyword">this</span>.startTime) / <span class="code-number">1000</span>;
+
+        <span class="code-comment">// 檢查是否達到勝利條件（3 分鐘 = 180 秒）</span>
+        <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.elapsedTime &gt;= <span class="code-number">180</span>) {
+            <span class="code-keyword">this</span>.<span class="code-function">winGame</span>();
+        }
+
+        <span class="code-comment">// 更新 UI 顯示</span>
+        <span class="code-keyword">this</span>.<span class="code-function">updateUI</span>();
+    }
+
+    <span class="code-function">updateUI</span>() {
+        <span class="code-comment">// 顯示時間（保留一位小數）</span>
+        document.<span class="code-function">getElementById</span>(<span class="code-string">'timeCount'</span>).textContent =
+            <span class="code-keyword">this</span>.elapsedTime.<span class="code-function">toFixed</span>(<span class="code-number">1</span>);
+    }
+}</pre>
+            </div>
+
+            <div class="highlight-box">
+                <h4>💡 為什麼使用 Date.now()？</h4>
+                <ul>
+                    <li><strong>準確性</strong>：基於系統時間，不受幀率影響</li>
+                    <li><strong>簡單性</strong>：只需記錄開始時間，每次更新時計算差值</li>
+                    <li><strong>暫停支援</strong>：暫停時停止計算，恢復時調整 startTime</li>
+                </ul>
+            </div>
+
+            <h3>步驟 2：生命值系統</h3>
+            <p>玩家有 3 條生命，被抓到就減少 1 條，歸零則遊戲結束。</p>
+
+            <div class="code-block">
+<pre><span class="code-keyword">class</span> <span class="code-function">Player</span> {
+    <span class="code-function">constructor</span>(x, y) {
+        <span class="code-comment">// 初始生命值</span>
+        <span class="code-keyword">this</span>.lives = CONFIG.INITIAL_LIVES;  <span class="code-comment">// 3</span>
+
+        <span class="code-comment">// 無敵狀態（被抓到後短暫無敵）</span>
+        <span class="code-keyword">this</span>.invincible = <span class="code-keyword">false</span>;
+        <span class="code-keyword">this</span>.invincibleTimer = <span class="code-number">0</span>;
+    }
+
+    <span class="code-comment">/**
+     * 玩家被擊中
+     * @returns {boolean} - 是否真的扣血（無敵狀態下不扣）
+     */</span>
+    <span class="code-function">hit</span>() {
+        <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.invincible) {
+            <span class="code-comment">// 扣除生命值</span>
+            <span class="code-keyword">this</span>.lives--;
+
+            <span class="code-comment">// 啟動無敵狀態（2 秒）</span>
+            <span class="code-keyword">this</span>.invincible = <span class="code-keyword">true</span>;
+            <span class="code-comment">// 轉換為幀數（假設 60 FPS）</span>
+            <span class="code-keyword">this</span>.invincibleTimer = CONFIG.INVINCIBLE_TIME / (<span class="code-number">1000</span> / <span class="code-number">60</span>);
+
+            <span class="code-comment">// 重生到起始位置</span>
+            <span class="code-keyword">this</span>.<span class="code-function">respawn</span>();
+
+            <span class="code-keyword">return</span> <span class="code-keyword">true</span>;  <span class="code-comment">// 確實扣血</span>
+        }
+        <span class="code-keyword">return</span> <span class="code-keyword">false</span>;  <span class="code-comment">// 無敵狀態，沒有扣血</span>
+    }
+
+    <span class="code-function">update</span>() {
+        <span class="code-comment">// 更新無敵狀態</span>
+        <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.invincible) {
+            <span class="code-keyword">this</span>.invincibleTimer--;
+            <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.invincibleTimer &lt;= <span class="code-number">0</span>) {
+                <span class="code-keyword">this</span>.invincible = <span class="code-keyword">false</span>;
+            }
+        }
+    }
+
+    <span class="code-function">respawn</span>() {
+        <span class="code-comment">// 重生到起始位置</span>
+        <span class="code-keyword">this</span>.x = PLAYER_START.x;
+        <span class="code-keyword">this</span>.y = PLAYER_START.y;
+    }
+}</pre>
+            </div>
+
+            <h3>步驟 3：無敵閃爍效果</h3>
+            <p>在繪製時加入閃爍效果，讓玩家知道自己處於無敵狀態。</p>
+
+            <div class="code-block">
+<pre><span class="code-function">draw</span>(ctx) {
+    <span class="code-comment">// 無敵狀態下的閃爍效果</span>
+    <span class="code-comment">// 每 5 幀切換一次顯示/隱藏</span>
+    <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.invincible && Math.<span class="code-function">floor</span>(<span class="code-keyword">this</span>.invincibleTimer / <span class="code-number">5</span>) % <span class="code-number">2</span> === <span class="code-number">0</span>) {
+        <span class="code-keyword">return</span>;  <span class="code-comment">// 這一幀不繪製（產生閃爍效果）</span>
+    }
+
+    <span class="code-comment">// 繪製玩家圓形</span>
+    ctx.fillStyle = CONFIG.PLAYER_COLOR;
+    ctx.<span class="code-function">beginPath</span>();
+    ctx.<span class="code-function">arc</span>(<span class="code-keyword">this</span>.x, <span class="code-keyword">this</span>.y, <span class="code-keyword">this</span>.radius, <span class="code-number">0</span>, Math.PI * <span class="code-number">2</span>);
+    ctx.<span class="code-function">fill</span>();
+}</pre>
+            </div>
+
+            <h3>步驟 4：UI 顯示生命值</h3>
+            <p>使用金錢符號 💰 顯示剩餘生命值。</p>
+
+            <div class="code-block">
+<pre><span class="code-function">updateUI</span>() {
+    <span class="code-comment">// 更新生命值顯示</span>
+    <span class="code-keyword">const</span> livesCount = document.<span class="code-function">getElementById</span>(<span class="code-string">'livesCount'</span>);
+    livesCount.innerHTML = <span class="code-string">''</span>;
+
+    <span class="code-comment">// 根據剩餘生命值顯示金錢符號</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; <span class="code-keyword">this</span>.player.lives; i++) {
+        livesCount.innerHTML += <span class="code-string">'&lt;span class="money"&gt;💰&lt;/span&gt;'</span>;
+    }
+}</pre>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎮 計分與計時展示</h4>
+                <div style="background: #2e3933; padding: 20px; border-radius: 10px; color: white;">
+                    <div style="display: flex; justify-content: space-around; font-size: 20px;">
+                        <div>
+                            <strong>剩餘生命：</strong>
+                            <span>💰💰💰</span>
+                        </div>
+                        <div>
+                            <strong>時間：</strong>
+                            <span id="demoTime">0.0</span> 秒
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 第五章：敵人 AI 與視線系統 -->
+        <section class="section" id="section5">
+            <h2>5. 敵人 AI 與視線系統</h2>
+
+            <p>敵人擁有兩種行為模式：巡邏模式和追擊模式。當敵人看到玩家時會切換到追擊模式。</p>
+
+            <h3>步驟 1：視線檢測系統</h3>
+            <p>使用射線與矩形相交演算法，判斷敵人與玩家之間是否有牆阻擋視線。</p>
+
+            <div class="code-block">
+<pre><span class="code-comment">/**
+ * 檢查兩點之間是否有牆阻擋視線
+ * @param {number} x1, y1 - 起點座標（敵人位置）
+ * @param {number} x2, y2 - 終點座標（玩家位置）
+ * @returns {boolean} - 是否有視線（無牆阻擋）
+ */</span>
+<span class="code-keyword">function</span> <span class="code-function">hasLineOfSight</span>(x1, y1, x2, y2) {
+    <span class="code-comment">// 檢查射線是否與任何牆體相交</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> wall <span class="code-keyword">of</span> WALLS) {
+        <span class="code-keyword">if</span> (<span class="code-function">lineRectIntersection</span>(x1, y1, x2, y2, wall)) {
+            <span class="code-keyword">return</span> <span class="code-keyword">false</span>;  <span class="code-comment">// 有牆阻擋</span>
+        }
+    }
+    <span class="code-keyword">return</span> <span class="code-keyword">true</span>;  <span class="code-comment">// 沒有阻擋，視線暢通</span>
+}
+
+<span class="code-comment">/**
+ * 射線與矩形相交檢測（Liang-Barsky 演算法）
+ */</span>
+<span class="code-keyword">function</span> <span class="code-function">lineRectIntersection</span>(x1, y1, x2, y2, rect) {
+    <span class="code-keyword">const</span> dx = x2 - x1;
+    <span class="code-keyword">const</span> dy = y2 - y1;
+
+    <span class="code-comment">// Liang-Barsky 演算法的參數</span>
+    <span class="code-keyword">let</span> t0 = <span class="code-number">0</span>, t1 = <span class="code-number">1</span>;
+    <span class="code-keyword">const</span> p = [-dx, dx, -dy, dy];
+    <span class="code-keyword">const</span> q = [
+        x1 - rect.x,
+        rect.x + rect.width - x1,
+        y1 - rect.y,
+        rect.y + rect.height - y1
+    ];
+
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; <span class="code-number">4</span>; i++) {
+        <span class="code-keyword">if</span> (p[i] === <span class="code-number">0</span>) {
+            <span class="code-keyword">if</span> (q[i] &lt; <span class="code-number">0</span>) <span class="code-keyword">return</span> <span class="code-keyword">true</span>;
+        } <span class="code-keyword">else</span> {
+            <span class="code-keyword">const</span> t = q[i] / p[i];
+            <span class="code-keyword">if</span> (p[i] &lt; <span class="code-number">0</span>) {
+                <span class="code-keyword">if</span> (t &gt; t1) <span class="code-keyword">return</span> <span class="code-keyword">false</span>;
+                <span class="code-keyword">if</span> (t &gt; t0) t0 = t;
+            } <span class="code-keyword">else</span> {
+                <span class="code-keyword">if</span> (t &lt; t0) <span class="code-keyword">return</span> <span class="code-keyword">false</span>;
+                <span class="code-keyword">if</span> (t &lt; t1) t1 = t;
+            }
+        }
+    }
+
+    <span class="code-keyword">return</span> <span class="code-keyword">true</span>;
+}</pre>
+            </div>
+
+            <h3>步驟 2：敵人 AI 邏輯</h3>
+            <p>敵人根據視線檢測結果，在巡邏和追擊模式之間切換。</p>
+
+            <div class="code-block">
+<pre><span class="code-keyword">class</span> <span class="code-function">Enemy</span> {
+    <span class="code-function">constructor</span>(x, y) {
+        <span class="code-keyword">this</span>.x = x;
+        <span class="code-keyword">this</span>.y = y;
+        <span class="code-keyword">this</span>.speed = CONFIG.ENEMY_SPEED;
+        <span class="code-keyword">this</span>.isChasing = <span class="code-keyword">false</span>;  <span class="code-comment">// 是否正在追擊</span>
+
+        <span class="code-comment">// 巡邏模式的隨機移動</span>
+        <span class="code-keyword">this</span>.direction = Math.<span class="code-function">random</span>() * Math.PI * <span class="code-number">2</span>;  <span class="code-comment">// 隨機方向</span>
+        <span class="code-keyword">this</span>.changeDirectionTimer = <span class="code-number">0</span>;
+        <span class="code-keyword">this</span>.changeDirectionInterval = <span class="code-number">60</span>;  <span class="code-comment">// 每 60 幀改變方向</span>
+    }
+
+    <span class="code-function">update</span>(player) {
+        <span class="code-comment">// 步驟 1：檢查是否看到玩家</span>
+        <span class="code-keyword">const</span> dx = player.x - <span class="code-keyword">this</span>.x;
+        <span class="code-keyword">const</span> dy = player.y - <span class="code-keyword">this</span>.y;
+        <span class="code-keyword">const</span> distance = Math.<span class="code-function">sqrt</span>(dx * dx + dy * dy);
+
+        <span class="code-keyword">this</span>.isChasing = <span class="code-keyword">false</span>;
+
+        <span class="code-comment">// 檢查距離和視線（玩家無敵時不追蹤）</span>
+        <span class="code-keyword">if</span> (!player.invincible && distance &lt;= CONFIG.ENEMY_VISION_RANGE) {
+            <span class="code-keyword">if</span> (<span class="code-function">hasLineOfSight</span>(<span class="code-keyword">this</span>.x, <span class="code-keyword">this</span>.y, player.x, player.y)) {
+                <span class="code-keyword">this</span>.isChasing = <span class="code-keyword">true</span>;  <span class="code-comment">// 切換到追擊模式</span>
+            }
+        }
+
+        <span class="code-keyword">let</span> moveX, moveY;
+
+        <span class="code-comment">// 步驟 2：根據模式決定移動方向</span>
+        <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.isChasing) {
+            <span class="code-comment">// 追擊模式：直接朝玩家移動</span>
+            <span class="code-keyword">const</span> chaseSpeed = CONFIG.ENEMY_CHASE_SPEED;
+            moveX = (dx / distance) * chaseSpeed;
+            moveY = (dy / distance) * chaseSpeed;
+        } <span class="code-keyword">else</span> {
+            <span class="code-comment">// 巡邏模式：隨機移動</span>
+            <span class="code-keyword">this</span>.changeDirectionTimer++;
+            <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.changeDirectionTimer &gt;= <span class="code-keyword">this</span>.changeDirectionInterval) {
+                <span class="code-comment">// 定期改變方向</span>
+                <span class="code-keyword">this</span>.direction = Math.<span class="code-function">random</span>() * Math.PI * <span class="code-number">2</span>;
+                <span class="code-keyword">this</span>.changeDirectionTimer = <span class="code-number">0</span>;
+            }
+
+            moveX = Math.<span class="code-function">cos</span>(<span class="code-keyword">this</span>.direction) * <span class="code-keyword">this</span>.speed;
+            moveY = Math.<span class="code-function">sin</span>(<span class="code-keyword">this</span>.direction) * <span class="code-keyword">this</span>.speed;
+        }
+
+        <span class="code-comment">// 步驟 3：碰撞檢測並移動</span>
+        <span class="code-keyword">const</span> newX = <span class="code-keyword">this</span>.x + moveX;
+        <span class="code-keyword">const</span> newY = <span class="code-keyword">this</span>.y + moveY;
+
+        <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.<span class="code-function">checkCollision</span>(newX, <span class="code-keyword">this</span>.y)) {
+            <span class="code-keyword">this</span>.x = newX;
+        } <span class="code-keyword">else</span> {
+            <span class="code-comment">// 碰到牆，改變方向</span>
+            <span class="code-keyword">this</span>.direction = Math.<span class="code-function">random</span>() * Math.PI * <span class="code-number">2</span>;
+        }
+
+        <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.<span class="code-function">checkCollision</span>(<span class="code-keyword">this</span>.x, newY)) {
+            <span class="code-keyword">this</span>.y = newY;
+        } <span class="code-keyword">else</span> {
+            <span class="code-keyword">this</span>.direction = Math.<span class="code-function">random</span>() * Math.PI * <span class="code-number">2</span>;
+        }
+    }
+}</pre>
+            </div>
+
+            <div class="highlight-box">
+                <h4>💡 AI 設計重點</h4>
+                <ul>
+                    <li><strong>視線範圍限制</strong>：只在一定距離內追蹤玩家，避免敵人過於強大</li>
+                    <li><strong>視線阻擋</strong>：牆壁會阻擋視線，玩家可以躲在牆後</li>
+                    <li><strong>無敵忽略</strong>：玩家無敵時不追蹤，避免持續騷擾</li>
+                    <li><strong>巡邏模式</strong>：沒看到玩家時隨機移動，保持威脅感</li>
+                </ul>
+            </div>
+
+            <h3>步驟 3：繪製視線指示</h3>
+            <p>追擊時繪製一條線，讓玩家清楚知道敵人正在追蹤。</p>
+
+            <div class="code-block">
+<pre><span class="code-function">draw</span>(ctx) {
+    <span class="code-comment">// 繪製敵人圓形</span>
+    ctx.fillStyle = <span class="code-keyword">this</span>.isChasing ?
+        CONFIG.ENEMY_CHASE_COLOR : CONFIG.ENEMY_COLOR;
+    ctx.<span class="code-function">beginPath</span>();
+    ctx.<span class="code-function">arc</span>(<span class="code-keyword">this</span>.x, <span class="code-keyword">this</span>.y, <span class="code-keyword">this</span>.radius, <span class="code-number">0</span>, Math.PI * <span class="code-number">2</span>);
+    ctx.<span class="code-function">fill</span>();
+
+    <span class="code-comment">// 追擊時繪製視線</span>
+    <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.isChasing) {
+        ctx.strokeStyle = <span class="code-string">'rgba(195, 78, 23, 0.4)'</span>;  <span class="code-comment">// 半透明橘色</span>
+        ctx.lineWidth = <span class="code-number">2</span>;
+        ctx.<span class="code-function">beginPath</span>();
+        ctx.<span class="code-function">moveTo</span>(<span class="code-keyword">this</span>.x, <span class="code-keyword">this</span>.y);
+        ctx.<span class="code-function">lineTo</span>(player.x, player.y);
+        ctx.<span class="code-function">stroke</span>();
+    }
+}</pre>
+            </div>
+        </section>
+
+        <!-- 第六章：遊戲狀態管理 -->
+        <section class="section" id="section6">
+            <h2>6. 遊戲狀態管理</h2>
+
+            <p>遊戲有多個狀態：開始畫面、遊戲進行中、遊戲結束、遊戲勝利。我們需要管理這些狀態之間的切換。</p>
+
+            <h3>步驟 1：定義遊戲狀態</h3>
+
+            <div class="code-block">
+<pre><span class="code-keyword">class</span> <span class="code-function">Game</span> {
+    <span class="code-function">constructor</span>() {
+        <span class="code-comment">// 遊戲狀態標記</span>
+        <span class="code-keyword">this</span>.gameStarted = <span class="code-keyword">false</span>;  <span class="code-comment">// 是否開始遊戲</span>
+        <span class="code-keyword">this</span>.gameOver = <span class="code-keyword">false</span>;     <span class="code-comment">// 是否遊戲結束</span>
+    }
+
+    <span class="code-comment">// 開始遊戲</span>
+    <span class="code-function">startGame</span>() {
+        document.<span class="code-function">getElementById</span>(<span class="code-string">'startScreen'</span>).classList.<span class="code-function">add</span>(<span class="code-string">'hide'</span>);
+        <span class="code-keyword">this</span>.gameStarted = <span class="code-keyword">true</span>;
+        <span class="code-keyword">this</span>.startTime = Date.<span class="code-function">now</span>();
+    }
+
+    <span class="code-comment">// 遊戲失敗</span>
+    <span class="code-function">endGame</span>() {
+        <span class="code-keyword">this</span>.gameOver = <span class="code-keyword">true</span>;
+        document.<span class="code-function">getElementById</span>(<span class="code-string">'finalTime'</span>).textContent =
+            <span class="code-keyword">this</span>.elapsedTime.<span class="code-function">toFixed</span>(<span class="code-number">1</span>);
+        document.<span class="code-function">getElementById</span>(<span class="code-string">'gameOver'</span>).classList.<span class="code-function">add</span>(<span class="code-string">'show'</span>);
+    }
+
+    <span class="code-comment">// 遊戲勝利</span>
+    <span class="code-function">winGame</span>() {
+        <span class="code-keyword">this</span>.gameOver = <span class="code-keyword">true</span>;
+        document.<span class="code-function">getElementById</span>(<span class="code-string">'winTime'</span>).textContent =
+            <span class="code-keyword">this</span>.elapsedTime.<span class="code-function">toFixed</span>(<span class="code-number">1</span>);
+        document.<span class="code-function">getElementById</span>(<span class="code-string">'winScreen'</span>).classList.<span class="code-function">add</span>(<span class="code-string">'show'</span>);
+    }
+
+    <span class="code-comment">// 重新開始</span>
+    <span class="code-function">restart</span>() {
+        <span class="code-comment">// 隱藏所有畫面</span>
+        document.<span class="code-function">getElementById</span>(<span class="code-string">'gameOver'</span>).classList.<span class="code-function">remove</span>(<span class="code-string">'show'</span>);
+        document.<span class="code-function">getElementById</span>(<span class="code-string">'winScreen'</span>).classList.<span class="code-function">remove</span>(<span class="code-string">'show'</span>);
+
+        <span class="code-comment">// 重置遊戲物件</span>
+        <span class="code-keyword">this</span>.player = <span class="code-keyword">new</span> <span class="code-function">Player</span>(PLAYER_START.x, PLAYER_START.y);
+        <span class="code-keyword">this</span>.enemy = <span class="code-keyword">new</span> <span class="code-function">Enemy</span>(ENEMY_START.x, ENEMY_START.y);
+        <span class="code-keyword">this</span>.gameOver = <span class="code-keyword">false</span>;
+        <span class="code-keyword">this</span>.gameStarted = <span class="code-keyword">true</span>;
+        <span class="code-keyword">this</span>.startTime = Date.<span class="code-function">now</span>();
+        <span class="code-keyword">this</span>.elapsedTime = <span class="code-number">0</span>;
+    }
+}</pre>
+            </div>
+
+            <h3>步驟 2：檢查遊戲狀態</h3>
+            <p>在遊戲更新循環中，檢查生命值和時間，觸發相應的狀態切換。</p>
+
+            <div class="code-block">
+<pre><span class="code-function">update</span>() {
+    <span class="code-comment">// 遊戲未開始或已結束，不更新</span>
+    <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.gameStarted || <span class="code-keyword">this</span>.gameOver) <span class="code-keyword">return</span>;
+
+    <span class="code-comment">// 更新遊戲物件</span>
+    <span class="code-keyword">this</span>.player.<span class="code-function">update</span>();
+    <span class="code-keyword">this</span>.enemy.<span class="code-function">update</span>(<span class="code-keyword">this</span>.player);
+
+    <span class="code-comment">// 檢查碰撞</span>
+    <span class="code-keyword">if</span> (<span class="code-function">circleCircleCollision</span>(
+        <span class="code-keyword">this</span>.player.x, <span class="code-keyword">this</span>.player.y, <span class="code-keyword">this</span>.player.radius,
+        <span class="code-keyword">this</span>.enemy.x, <span class="code-keyword">this</span>.enemy.y, <span class="code-keyword">this</span>.enemy.radius
+    )) {
+        <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.player.<span class="code-function">hit</span>()) {
+            <span class="code-comment">// 顯示被抓訊息</span>
+            <span class="code-keyword">this</span>.<span class="code-function">showHitMessage</span>();
+
+            <span class="code-comment">// 檢查生命值，決定是否結束遊戲</span>
+            <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.player.lives &lt;= <span class="code-number">0</span>) {
+                <span class="code-keyword">this</span>.<span class="code-function">endGame</span>();  <span class="code-comment">// 遊戲失敗</span>
+            }
+        }
+    }
+
+    <span class="code-comment">// 更新計時器</span>
+    <span class="code-keyword">this</span>.elapsedTime = (Date.<span class="code-function">now</span>() - <span class="code-keyword">this</span>.startTime) / <span class="code-number">1000</span>;
+
+    <span class="code-comment">// 檢查勝利條件（180 秒 = 3 分鐘）</span>
+    <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.elapsedTime &gt;= <span class="code-number">180</span>) {
+        <span class="code-keyword">this</span>.<span class="code-function">winGame</span>();  <span class="code-comment">// 遊戲勝利</span>
+    }
+
+    <span class="code-keyword">this</span>.<span class="code-function">updateUI</span>();
+}</pre>
+            </div>
+
+            <h3>步驟 3：顯示被抓訊息</h3>
+            <p>當玩家被抓到時，短暫顯示提示訊息。</p>
+
+            <div class="code-block">
+<pre><span class="code-function">showHitMessage</span>() {
+    <span class="code-keyword">const</span> hitMessage = document.<span class="code-function">getElementById</span>(<span class="code-string">'hitMessage'</span>);
+    hitMessage.classList.<span class="code-function">add</span>(<span class="code-string">'show'</span>);
+
+    <span class="code-comment">// 1.5 秒後自動隱藏</span>
+    <span class="code-function">setTimeout</span>(() =&gt; {
+        hitMessage.classList.<span class="code-function">remove</span>(<span class="code-string">'show'</span>);
+    }, CONFIG.HIT_MESSAGE_TIME);  <span class="code-comment">// 1500 毫秒</span>
+}</pre>
+            </div>
+
+            <div class="info-box">
+                <h4>🎯 狀態管理要點</h4>
+                <ul>
+                    <li><strong>清晰的狀態標記</strong>：使用布林值標記遊戲狀態</li>
+                    <li><strong>狀態隔離</strong>：遊戲結束時停止更新邏輯</li>
+                    <li><strong>UI 同步</strong>：狀態變化時同步更新介面</li>
+                    <li><strong>可重置性</strong>：重新開始時完整重置所有狀態</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 第七章：完整遊戲循環 -->
+        <section class="section" id="section7">
+            <h2>7. 完整遊戲循環</h2>
+
+            <p>遊戲循環是整個遊戲的心臟，負責持續更新遊戲狀態和繪製畫面。</p>
+
+            <h3>步驟 1：使用 requestAnimationFrame</h3>
+            <p>requestAnimationFrame 是瀏覽器提供的專門用於動畫的 API，它會在瀏覽器準備重繪時呼叫你的函數。</p>
+
+            <div class="code-block">
+<pre><span class="code-keyword">class</span> <span class="code-function">Game</span> {
+    <span class="code-comment">// 遊戲主循環</span>
+    <span class="code-function">gameLoop</span>() {
+        <span class="code-comment">// 步驟 1：更新遊戲邏輯</span>
+        <span class="code-keyword">this</span>.<span class="code-function">update</span>();
+
+        <span class="code-comment">// 步驟 2：繪製畫面</span>
+        <span class="code-keyword">this</span>.<span class="code-function">draw</span>();
+
+        <span class="code-comment">// 步驟 3：請求下一幀</span>
+        <span class="code-function">requestAnimationFrame</span>(() =&gt; <span class="code-keyword">this</span>.<span class="code-function">gameLoop</span>());
+    }
+
+    <span class="code-comment">// 啟動遊戲</span>
+    <span class="code-function">start</span>() {
+        <span class="code-keyword">this</span>.<span class="code-function">gameLoop</span>();
+    }
+}</pre>
+            </div>
+
+            <div class="highlight-box">
+                <h4>💡 為什麼使用 requestAnimationFrame？</h4>
+                <ul>
+                    <li><strong>效能優化</strong>：自動與螢幕刷新率同步（通常 60 FPS）</li>
+                    <li><strong>省電</strong>：頁面不可見時自動暫停</li>
+                    <li><strong>流暢度</strong>：比 setTimeout/setInterval 更穩定</li>
+                    <li><strong>時間精確</strong>：提供高精度時間戳</li>
+                </ul>
+            </div>
+
+            <h3>步驟 2：完整的遊戲初始化</h3>
+
+            <div class="code-block">
+<pre><span class="code-comment">// ==================== 初始化遊戲 ====================</span>
+<span class="code-keyword">let</span> game;
+
+window.<span class="code-function">addEventListener</span>(<span class="code-string">'load'</span>, () =&gt; {
+    <span class="code-comment">// 等待頁面載入完成後初始化遊戲</span>
+    game = <span class="code-keyword">new</span> <span class="code-function">Game</span>();
+    game.<span class="code-function">start</span>();  <span class="code-comment">// 啟動遊戲循環</span>
+});</pre>
+            </div>
+
+            <h3>步驟 3：完整的更新與繪製流程</h3>
+
+            <div class="code-block">
+<pre><span class="code-keyword">class</span> <span class="code-function">Game</span> {
+    <span class="code-function">update</span>() {
+        <span class="code-comment">// 檢查遊戲狀態</span>
+        <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.gameStarted || <span class="code-keyword">this</span>.gameOver) <span class="code-keyword">return</span>;
+
+        <span class="code-comment">// 1. 更新玩家</span>
+        <span class="code-keyword">this</span>.player.<span class="code-function">update</span>();
+
+        <span class="code-comment">// 2. 更新敵人</span>
+        <span class="code-keyword">this</span>.enemy.<span class="code-function">update</span>(<span class="code-keyword">this</span>.player);
+
+        <span class="code-comment">// 3. 檢查碰撞</span>
+        <span class="code-keyword">if</span> (<span class="code-function">circleCircleCollision</span>(
+            <span class="code-keyword">this</span>.player.x, <span class="code-keyword">this</span>.player.y, <span class="code-keyword">this</span>.player.radius,
+            <span class="code-keyword">this</span>.enemy.x, <span class="code-keyword">this</span>.enemy.y, <span class="code-keyword">this</span>.enemy.radius
+        )) {
+            <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.player.<span class="code-function">hit</span>()) {
+                <span class="code-keyword">this</span>.<span class="code-function">showHitMessage</span>();
+                <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.player.lives &lt;= <span class="code-number">0</span>) {
+                    <span class="code-keyword">this</span>.<span class="code-function">endGame</span>();
+                }
+            }
+        }
+
+        <span class="code-comment">// 4. 更新計時器</span>
+        <span class="code-keyword">this</span>.elapsedTime = (Date.<span class="code-function">now</span>() - <span class="code-keyword">this</span>.startTime) / <span class="code-number">1000</span>;
+
+        <span class="code-comment">// 5. 檢查勝利條件</span>
+        <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.elapsedTime &gt;= <span class="code-number">180</span>) {
+            <span class="code-keyword">this</span>.<span class="code-function">winGame</span>();
+        }
+
+        <span class="code-comment">// 6. 更新 UI</span>
+        <span class="code-keyword">this</span>.<span class="code-function">updateUI</span>();
+    }
+
+    <span class="code-function">draw</span>() {
+        <span class="code-comment">// 1. 清空畫面（繪製地板）</span>
+        <span class="code-keyword">this</span>.ctx.fillStyle = CONFIG.FLOOR_COLOR;
+        <span class="code-keyword">this</span>.ctx.<span class="code-function">fillRect</span>(<span class="code-number">0</span>, <span class="code-number">0</span>, CONFIG.CANVAS_WIDTH, CONFIG.CANVAS_HEIGHT);
+
+        <span class="code-comment">// 2. 繪製牆體</span>
+        <span class="code-keyword">this</span>.ctx.fillStyle = CONFIG.WALL_COLOR;
+        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> wall <span class="code-keyword">of</span> WALLS) {
+            <span class="code-keyword">this</span>.ctx.<span class="code-function">fillRect</span>(wall.x, wall.y, wall.width, wall.height);
+        }
+
+        <span class="code-comment">// 3. 繪製敵人</span>
+        <span class="code-keyword">this</span>.enemy.<span class="code-function">draw</span>(<span class="code-keyword">this</span>.ctx);
+
+        <span class="code-comment">// 4. 繪製玩家</span>
+        <span class="code-keyword">this</span>.player.<span class="code-function">draw</span>(<span class="code-keyword">this</span>.ctx);
+    }
+}</pre>
+            </div>
+
+            <div class="demo-box">
+                <h4>🎮 遊戲循環流程圖</h4>
+                <div style="background: white; padding: 20px; border-radius: 10px; text-align: left;">
+                    <ol class="step-list">
+                        <li><strong>初始化</strong>：載入遊戲資源，建立遊戲物件</li>
+                        <li><strong>更新邏輯</strong>：處理輸入、移動物件、檢測碰撞</li>
+                        <li><strong>繪製畫面</strong>：清空 → 繪製背景 → 繪製物件</li>
+                        <li><strong>檢查狀態</strong>：判斷勝利/失敗條件</li>
+                        <li><strong>請求下一幀</strong>：使用 requestAnimationFrame 繼續循環</li>
+                    </ol>
+                </div>
+            </div>
+
+            <h3>完整專案結構</h3>
+            <p>最後，讓我們總結一下完整的專案結構：</p>
+
+            <div class="code-block">
+<pre><span class="code-comment">// ==================== 檔案結構 ====================</span>
+game1/
+├── game1.html          <span class="code-comment">// HTML 頁面</span>
+├── game1.js            <span class="code-comment">// JavaScript 遊戲邏輯</span>
+└── game1.css           <span class="code-comment">// CSS 樣式</span>
+
+<span class="code-comment">// ==================== 程式碼結構 ====================</span>
+<span class="code-comment">// 1. 配置與常數</span>
+- CONFIG 物件
+- WALLS 陣列
+- 起始位置
+
+<span class="code-comment">// 2. 工具函數</span>
+- circleRectCollision()      <span class="code-comment">// 圓形與矩形碰撞</span>
+- circleCircleCollision()    <span class="code-comment">// 圓形與圓形碰撞</span>
+- lineRectIntersection()     <span class="code-comment">// 射線與矩形相交</span>
+- hasLineOfSight()           <span class="code-comment">// 視線檢測</span>
+
+<span class="code-comment">// 3. 類別定義</span>
+- <span class="code-keyword">class</span> Player              <span class="code-comment">// 玩家類別</span>
+  - constructor()
+  - update()
+  - checkCollision()
+  - hit()
+  - respawn()
+  - draw()
+
+- <span class="code-keyword">class</span> Enemy               <span class="code-comment">// 敵人類別</span>
+  - constructor()
+  - update()
+  - checkCollision()
+  - draw()
+
+- <span class="code-keyword">class</span> Game                <span class="code-comment">// 遊戲主類別</span>
+  - constructor()
+  - setupInput()
+  - update()
+  - draw()
+  - updateUI()
+  - gameLoop()
+  - startGame()
+  - endGame()
+  - winGame()
+  - restart()
+
+<span class="code-comment">// 4. 初始化</span>
+window.<span class="code-function">addEventListener</span>(<span class="code-string">'load'</span>, () =&gt; {
+    game = <span class="code-keyword">new</span> <span class="code-function">Game</span>();
+    game.<span class="code-function">start</span>();
+});</pre>
+            </div>
+        </section>
+
+        <!-- 結語 -->
+        <footer>
+            <h2>🎉 恭喜完成教學！</h2>
+            <p>你已經學會了如何撰寫一個完整的 2D 躲避遊戲，包含：</p>
+            <ul style="text-align: left; max-width: 600px; margin: 20px auto;">
+                <li>Canvas 繪圖與基礎設定</li>
+                <li>碰撞檢測系統（圓形與矩形、圓形與圓形）</li>
+                <li>多種輸入控制（鍵盤、滑鼠、觸控）</li>
+                <li>計時與計分邏輯</li>
+                <li>敵人 AI 與視線系統</li>
+                <li>遊戲狀態管理</li>
+                <li>完整的遊戲循環</li>
+            </ul>
+            <p style="margin-top: 30px;">現在你可以基於這些知識，創造屬於自己的遊戲！</p>
+            <div class="nav-buttons" style="margin-top: 30px;">
+                <a href="../index.html" class="nav-btn">回到首頁</a>
+                <a href="../game1/game1.html" class="nav-btn">試玩遊戲</a>
+            </div>
+            <p style="margin-top: 40px; color: #999;">© 2025 各為「保保」，上車囉 - 程式教學</p>
+        </footer>
+    </div>
+
+    <script>
+        // Demo 1: 基本畫布繪製
+        const demo1Canvas = document.getElementById('demo1');
+        const demo1Ctx = demo1Canvas.getContext('2d');
+
+        // 繪製地板
+        demo1Ctx.fillStyle = '#2e3933';
+        demo1Ctx.fillRect(0, 0, 400, 300);
+
+        // 繪製牆體（縮放版）
+        demo1Ctx.fillStyle = '#d0d4d0';
+        const wallsDemo = [
+            {x: 0, y: 0, width: 400, height: 10},
+            {x: 0, y: 290, width: 400, height: 10},
+            {x: 0, y: 0, width: 10, height: 300},
+            {x: 390, y: 0, width: 10, height: 300},
+            {x: 50, y: 50, width: 75, height: 10},
+            {x: 150, y: 100, width: 10, height: 100}
+        ];
+        wallsDemo.forEach(wall => {
+            demo1Ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
+        });
+
+        // Demo 2: 碰撞檢測示意圖
+        const demo2Canvas = document.getElementById('demo2');
+        const demo2Ctx = demo2Canvas.getContext('2d');
+        let demo2X = 100;
+        let demo2Y = 150;
+        let demo2DX = 2;
+        let demo2DY = 1;
+
+        function circleRectCollisionDemo(cx, cy, radius, rect) {
+            let testX = cx;
+            let testY = cy;
+
+            if (cx < rect.x) testX = rect.x;
+            else if (cx > rect.x + rect.width) testX = rect.x + rect.width;
+
+            if (cy < rect.y) testY = rect.y;
+            else if (cy > rect.y + rect.height) testY = rect.y + rect.height;
+
+            const distX = cx - testX;
+            const distY = cy - testY;
+            const distance = Math.sqrt(distX * distX + distY * distY);
+
+            return distance <= radius;
+        }
+
+        function animateDemo2() {
+            // 清空
+            demo2Ctx.fillStyle = '#2e3933';
+            demo2Ctx.fillRect(0, 0, 400, 300);
+
+            // 繪製矩形
+            const rect = {x: 250, y: 100, width: 100, height: 100};
+            demo2Ctx.fillStyle = '#d0d4d0';
+            demo2Ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+            // 移動圓形
+            demo2X += demo2DX;
+            demo2Y += demo2DY;
+
+            // 邊界反彈
+            if (demo2X < 20 || demo2X > 380) demo2DX *= -1;
+            if (demo2Y < 20 || demo2Y > 280) demo2DY *= -1;
+
+            // 檢查碰撞
+            const isColliding = circleRectCollisionDemo(demo2X, demo2Y, 15, rect);
+
+            // 繪製圓形（碰撞時變紅）
+            demo2Ctx.fillStyle = isColliding ? '#c34e17' : '#a0c5db';
+            demo2Ctx.beginPath();
+            demo2Ctx.arc(demo2X, demo2Y, 15, 0, Math.PI * 2);
+            demo2Ctx.fill();
+
+            requestAnimationFrame(animateDemo2);
+        }
+
+        animateDemo2();
+
+        // Demo 計時器
+        let demoStartTime = Date.now();
+        function updateDemoTime() {
+            const elapsed = (Date.now() - demoStartTime) / 1000;
+            document.getElementById('demoTime').textContent = elapsed.toFixed(1);
+            requestAnimationFrame(updateDemoTime);
+        }
+        updateDemoTime();
+    </script>
+</body>
+</html>
